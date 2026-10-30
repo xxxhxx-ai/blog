@@ -1,0 +1,233 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHeader from '../components/PageHeader.astro';
+import ChibiArt from '../components/ChibiArt.astro';
+import { SITE } from '../data/site';
+import { getPosts } from '../lib/posts';
+
+const posts = await getPosts();
+const first = posts.length ? posts[posts.length - 1].data.pubDate : new Date();
+
+const stack = [
+  { k: '框架', v: 'Astro · 静态输出，默认零 JS' },
+  { k: '样式', v: '原生 CSS · 变量驱动的双主题' },
+  { k: '内容', v: 'Markdown · 一个文件就是一篇文章' },
+  { k: '托管', v: 'GitHub Pages · 免费、全球 CDN' },
+  { k: '评论', v: 'Giscus · 数据存在自己的仓库里' },
+  { k: '搜索', v: '构建期生成索引，纯前端检索' },
+];
+
+const principles = [
+  { t: '写作是为了想清楚', d: '很多想法在脑子里是完整的，写下来才发现漏洞。写文章的过程，比文章本身有用。' },
+  { t: '宁可少，不要假', d: '没做过的事不写教程，没想明白的话不下结论。这个站上的每一篇，都是我真经历过的。' },
+  { t: '东西要能用', d: '做项目时我更关心"有没有人真的在用"，而不是"技术栈是否先进"。' },
+];
+---
+
+<BaseLayout title="关于" description={`关于 ${SITE.author} 和这个博客。`}>
+  <PageHeader
+    kicker="// ABOUT"
+    title="关于"
+    desc="一个还在学着把想法做出来的人，和一间自己的屋子。"
+    meta={`SINCE ${SITE.startYear} · ${posts.length} POSTS`}
+  />
+
+  <div class="shell body">
+    <div class="intro-grid">
+      <div class="intro-text">
+        <p class="big">
+          我是 <span class="hl mono">lxxxhxx</span>。一个普通的学生，
+          大部分时间在做两件事：学一些东西，然后把它们做出来。
+        </p>
+        <p>
+          这个博客是我的第二个大脑。学到的东西如果不写下来，三个月后一定忘；
+          做过的项目如果不记录取舍，下次还会踩同一个坑。所以这里的内容很杂——
+          有正经的技术笔记，也有没什么用但舍不得删的随笔。
+        </p>
+        <p>
+          我不太擅长把话说得漂亮。如果你在这里读到某句话觉得"这人挺实在的"，
+          那大概就是我想达到的效果。
+        </p>
+      </div>
+
+      <div class="intro-art">
+        <ChibiArt size={190} tone={0} />
+        <div class="art-tag mono">LV.∞ · STILL LEARNING</div>
+      </div>
+    </div>
+
+    <section class="block">
+      <h2 class="sec-t mono">// 三条我尽量遵守的原则</h2>
+      <div class="pr-grid">
+        {principles.map((p, i) => (
+          <div class="pr panel corners reveal">
+            <span class="pr-no mono">0{i + 1}</span>
+            <h3>{p.t}</h3>
+            <p>{p.d}</p>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <section class="block">
+      <h2 class="sec-t mono">// 这个站是怎么搭的</h2>
+      <p class="sec-d">
+        全部免费。<strong>没有服务器、没有数据库、没有月费</strong>，所有内容都是一个可以随时打包带走的文件夹。
+        想看具体怎么做的，可以读 <a href="/posts/build-my-blog">《从零搭一个属于自己的博客》</a>。
+      </p>
+      <div class="stack">
+        {stack.map((s) => (
+          <div class="st-row">
+            <span class="st-k mono">{s.k}</span>
+            <span class="st-v">{s.v}</span>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <section class="block">
+      <h2 class="sec-t mono">// 联系</h2>
+      <p class="sec-d">想聊点什么、发现哪里写错了、或者只是打个招呼，都欢迎。</p>
+      <div class="contact">
+        <a href={`mailto:${SITE.email}`} class="btn primary">发邮件</a>
+        <a href="/guestbook" class="btn">在留言板写一句</a>
+        <a href="/rss.xml" class="btn">订阅 RSS</a>
+      </div>
+      <p class="since mono">
+        第一篇写于 {first.getFullYear()} 年 · 这个站会一直开着
+      </p>
+    </section>
+  </div>
+</BaseLayout>
+
+<style>
+  .body { padding-top: 34px; }
+
+  .intro-grid {
+    display: grid;
+    grid-template-columns: 1fr 200px;
+    gap: 44px;
+    align-items: center;
+    padding-bottom: 40px;
+    border-bottom: 1px solid var(--line-soft);
+  }
+  .intro-text p {
+    font-size: 15.2px;
+    line-height: 2.05;
+    color: var(--text-2);
+    margin-bottom: 18px;
+  }
+  .big {
+    font-family: var(--font-serif);
+    font-size: 19.5px !important;
+    line-height: 1.95 !important;
+    color: var(--text) !important;
+  }
+  .hl {
+    color: var(--accent);
+    font-size: 0.94em;
+  }
+  .intro-art {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+  }
+  .art-tag {
+    font-size: 9px;
+    letter-spacing: 0.14em;
+    color: var(--text-3);
+    border: 1px solid var(--line);
+    border-radius: 20px;
+    padding: 3px 11px;
+    white-space: nowrap;
+  }
+
+  .block { margin-top: 52px; }
+  .sec-t {
+    font-size: 12px;
+    letter-spacing: 0.16em;
+    color: var(--accent-2);
+    margin-bottom: 16px;
+  }
+  .sec-d {
+    font-size: 14px;
+    color: var(--text-2);
+    line-height: 1.9;
+    margin-bottom: 22px;
+    max-width: min(66ch, 100%);
+  }
+  .sec-d strong { color: var(--text); }
+  .sec-d a {
+    color: var(--accent-2);
+    border-bottom: 1px solid var(--line-strong);
+  }
+
+  .pr-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+  }
+  .pr {
+    padding: 22px 20px;
+    position: relative;
+  }
+  .pr-no {
+    font-size: 10px;
+    letter-spacing: 0.14em;
+    color: var(--text-3);
+    opacity: 0.6;
+  }
+  .pr h3 {
+    font-size: 16.5px;
+    margin: 10px 0 8px;
+  }
+  .pr p {
+    font-size: 13.2px;
+    line-height: 1.82;
+    color: var(--text-2);
+  }
+
+  .stack {
+    border: 1px solid var(--line);
+    border-radius: 13px;
+    overflow: hidden;
+  }
+  .st-row {
+    display: grid;
+    grid-template-columns: 86px 1fr;
+    gap: 16px;
+    padding: 13px 20px;
+    border-bottom: 1px solid var(--line-soft);
+    align-items: baseline;
+  }
+  .st-row:last-child { border-bottom: none; }
+  .st-k {
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    color: var(--text-3);
+  }
+  .st-v {
+    font-size: 13.4px;
+    color: var(--text-2);
+  }
+
+  .contact {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+  }
+  .since {
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    color: var(--text-3);
+    opacity: 0.8;
+  }
+
+  @media (max-width: 860px) {
+    .intro-grid { grid-template-columns: 1fr; gap: 26px; }
+    .intro-art { order: -1; align-items: flex-start; }
+    .pr-grid { grid-template-columns: 1fr; }
+  }
+</style>

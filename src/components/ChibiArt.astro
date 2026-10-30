@@ -1,0 +1,88 @@
+---
+/**
+ * Q 版少女贴纸 —— 水彩插画版
+ * 4 个角色对应 4 种色调：0 紫 / 1 薄荷 / 2 粉 / 3 奶金
+ * 图片在 src/assets/chibi/，构建时自动转 webp 并压缩
+ */
+import { Image } from 'astro:assets';
+import g0 from '../assets/chibi/girl-0-purple.png';
+import g1 from '../assets/chibi/girl-1-cream.png';
+import g2 from '../assets/chibi/girl-2-pink.png';
+import g3 from '../assets/chibi/girl-3-mint.png';
+
+interface Props {
+  tone?: 0 | 1 | 2 | 3;
+  size?: number;
+  /** 贴纸倾斜角度，默认按 tone 自动给一个小角度 */
+  tilt?: number;
+  /** 是否显示外圈描边 */
+  ring?: boolean;
+  class?: string;
+  alt?: string;
+}
+
+const { tone = 0, size = 120, tilt, ring = true, class: cls = '', alt = '' } = Astro.props;
+
+const imgs = [g0, g3, g2, g1];
+const tilts = [-5, 4, -3, 5];
+const angle = tilt ?? tilts[tone];
+---
+
+<span
+  class:list={['sticker', { ring }, cls]}
+  style={`--s:${size}px;--r:${angle}deg`}
+>
+  <Image
+    src={imgs[tone]}
+    alt={alt}
+    width={320}
+    height={320}
+    format="webp"
+    quality={82}
+    loading="lazy"
+    decoding="async"
+  />
+</span>
+
+<style>
+  .sticker {
+    display: inline-grid;
+    place-items: center;
+    width: var(--s);
+    height: var(--s);
+    border-radius: 30%;
+    overflow: hidden;
+    flex-shrink: 0;
+    background: #fffaf6;
+    /* 允许父级通过 --pos 覆盖定位方式（absolute 等） */
+    position: var(--pos, relative);
+    transform: rotate(var(--r));
+    box-shadow:
+      0 14px 34px -14px rgba(10, 8, 20, 0.55),
+      0 2px 8px -2px rgba(10, 8, 20, 0.3);
+    transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.4s ease;
+    isolation: isolate;
+  }
+  .sticker.ring {
+    border: 2px solid rgba(255, 255, 255, 0.72);
+  }
+  .sticker :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: 50% 20%;
+    display: block;
+  }
+  /* 内侧柔光，让白底和插画更融合 */
+  .sticker::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: 30%;
+    pointer-events: none;
+    box-shadow: inset 0 0 22px rgba(255, 220, 235, 0.35);
+  }
+  .sticker:hover {
+    transform: rotate(0deg) scale(1.05);
+  }
+</style>

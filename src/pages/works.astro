@@ -1,0 +1,218 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHeader from '../components/PageHeader.astro';
+import ChibiArt from '../components/ChibiArt.astro';
+import { WORKS } from '../data/site';
+
+const statusTone: Record<string, string> = {
+  已上线: 'live',
+  已完成: 'done',
+  持续更新: 'wip',
+  占位: 'hold',
+};
+---
+
+<BaseLayout title="作品集" description="lxxxhxx 做过的项目与实验。">
+  <PageHeader
+    kicker="// PORTFOLIO"
+    title="作品集"
+    desc="做过的东西。每一条都写了当时的角色、用的技术，以及现在回头看觉得哪里可以更好。"
+    meta={`${WORKS.length} ITEMS`}
+    chibiTone={1}
+  />
+
+  <div class="shell body">
+    <div class="grid">
+      {WORKS.map((w, i) => (
+        <a href={w.href} class="work panel corners reveal">
+          <div class="w-top">
+            <span class="w-no mono">{String(i + 1).padStart(2, '0')}</span>
+            <span class:list={['w-status mono', statusTone[w.status] ?? 'hold']}>{w.status}</span>
+          </div>
+
+          <h2>{w.title}</h2>
+          <p class="w-desc">{w.desc}</p>
+
+          <div class="w-meta mono">
+            <span>{w.year}</span>
+            <span class="sep" aria-hidden="true"></span>
+            <span>{w.role}</span>
+          </div>
+
+          {w.stack.length > 0 && (
+            <div class="w-stack">
+              {w.stack.map((s) => <span class="chip">{s}</span>)}
+            </div>
+          )}
+
+          <div class="w-art">
+            <ChibiArt size={128} tone={w.tone} />
+          </div>
+
+          <span class="w-go mono">VIEW →</span>
+        </a>
+      ))}
+    </div>
+
+    <div class="note panel reveal">
+      <p class="mono kicker">// NOTE</p>
+      <p>
+        这个列表里每一项都指向对应的文章，那里有更完整的过程记录。
+        想加新作品，编辑 <code>src/data/site.ts</code> 里的 <code>WORKS</code> 数组就行。
+      </p>
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  .body { padding-top: 34px; }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+  }
+
+  .work {
+    display: block;
+    position: relative;
+    padding: 24px 26px 26px;
+    overflow: hidden;
+    isolation: isolate;
+    min-height: 260px;
+  }
+  .work:hover { transform: translateY(-4px); }
+
+  .w-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+  }
+  .w-no {
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    color: var(--text-3);
+    opacity: 0.65;
+  }
+  .w-status {
+    font-size: 9px;
+    letter-spacing: 0.12em;
+    padding: 3px 9px;
+    border-radius: 20px;
+    border: 1px solid var(--line);
+    color: var(--text-3);
+  }
+  .w-status.live {
+    color: #7fd0b4;
+    border-color: #2f5748;
+    background: #12211b;
+  }
+  .w-status.done {
+    color: var(--accent-2);
+    border-color: var(--line-strong);
+  }
+  .w-status.wip {
+    color: var(--accent);
+    border-color: var(--line-strong);
+    background: var(--accent-soft);
+  }
+
+  .work h2 {
+    font-size: 21px;
+    line-height: 1.45;
+    margin-bottom: 10px;
+    max-width: 78%;
+    transition: color 0.26s ease;
+  }
+  .work:hover h2 { color: var(--accent); }
+
+  .w-desc {
+    font-size: 13.4px;
+    line-height: 1.8;
+    color: var(--text-2);
+    max-width: 76%;
+    margin-bottom: 16px;
+  }
+
+  .w-meta {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    color: var(--text-3);
+    margin-bottom: 14px;
+    max-width: 64%;
+  }
+  .sep {
+    width: 10px;
+    height: 1px;
+    background: var(--line-strong);
+  }
+
+  .w-stack { display: flex; gap: 6px; flex-wrap: wrap; max-width: 66%; }
+
+  .w-art {
+    position: absolute;
+    right: 20px;
+    bottom: 18px;
+    z-index: 0;
+    transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .work > :not(.w-art) {
+    position: relative;
+    z-index: 1;
+  }
+  .work:hover .w-art {
+    transform: translateY(-5px);
+  }
+
+  .w-go {
+    position: absolute;
+    right: 24px;
+    top: 50%;
+    transform: translate(10px, -50%);
+    font-size: 10px;
+    letter-spacing: 0.16em;
+    color: var(--accent-2);
+    opacity: 0;
+    transition: all 0.3s ease;
+  }
+  .work:hover .w-go {
+    opacity: 1;
+    transform: translate(0, -50%);
+  }
+
+  .note {
+    margin-top: 26px;
+    padding: 20px 24px;
+  }
+  .note .kicker {
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    color: var(--accent-2);
+    margin-bottom: 8px;
+  }
+  .note p {
+    font-size: 13.2px;
+    color: var(--text-2);
+    line-height: 1.8;
+  }
+  .note code {
+    font-family: var(--font-mono);
+    font-size: 11.6px;
+    padding: 1px 6px;
+    border-radius: 5px;
+    background: var(--accent-soft);
+    border: 1px solid var(--line);
+    color: var(--accent-2);
+  }
+
+  @media (max-width: 780px) {
+    .grid { grid-template-columns: 1fr; }
+    .work h2, .w-desc { max-width: 100%; }
+    .w-desc { max-width: 72%; }
+    .w-go { display: none; }
+  }
+</style>

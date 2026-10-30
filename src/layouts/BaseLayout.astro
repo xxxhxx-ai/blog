@@ -1,0 +1,120 @@
+---
+import '../styles/global.css';
+import { ClientRouter } from 'astro:transitions';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+
+interface Props {
+  title: string;
+  description?: string;
+  /** 用于 <title> 的后缀，首页留空 */
+  suffix?: boolean;
+}
+
+const {
+  title,
+  description = 'lxxxhxx 的学习笔记与作品集 —— 一个还在学着把想法做出来的人。',
+  suffix = true,
+} = Astro.props;
+
+const fullTitle = suffix ? `${title} · lxxxhxx` : title;
+const canonical = new URL(Astro.url.pathname, Astro.site ?? 'https://lxxxhxx.github.io');
+---
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="alternate" type="application/rss+xml" title="lxxxhxx" href="/rss.xml" />
+    <meta name="generator" content={Astro.generator} />
+    <meta name="theme-color" content="#07080d" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <!-- 视图过渡：站内跳转不刷新，像应用一样切换 -->
+    <ClientRouter />
+
+    <!-- 主题初始化：必须在样式生效前执行，否则会闪白 -->
+    <script is:inline>
+      (function () {
+        try {
+          var forced = new URLSearchParams(location.search).get('theme');
+          if (forced === 'light' || forced === 'dark') {
+            document.documentElement.dataset.theme = forced;
+            return;
+          }
+          if (document.documentElement.dataset.theme) return;
+          var saved = localStorage.getItem('theme');
+          var prefersLight = !window.matchMedia('(prefers-color-scheme: dark)').matches;
+          document.documentElement.dataset.theme = saved || (prefersLight ? 'light' : 'dark');
+        } catch (e) {}
+      })();
+    </script>
+  </head>
+
+  <body>
+    <a href="#main" class="skip">跳到正文</a>
+    <Header />
+    <main id="main">
+      <slot />
+    </main>
+    <Footer />
+
+    <script>
+      // 入场动画：每次导航后重新观察新内容
+      function initReveal() {
+        const els = document.querySelectorAll('.reveal:not(.in)');
+        if (!('IntersectionObserver' in window)) {
+          els.forEach((el) => el.classList.add('in'));
+          return;
+        }
+        const io = new IntersectionObserver(
+          (entries) => {
+            entries.forEach((en) => {
+              if (en.isIntersecting) {
+                en.target.classList.add('in');
+                io.unobserve(en.target);
+              }
+            });
+          },
+          { rootMargin: '0px 0px -8% 0px', threshold: 0.06 }
+        );
+        els.forEach((el) => io.observe(el));
+      }
+
+      // 导航后回到顶部（浏览器的前进后退不强制，交给浏览器自身）
+      let firstLoad = true;
+      document.addEventListener('astro:page-load', () => {
+        initReveal();
+        if (!firstLoad) window.scrollTo({ top: 0, behavior: 'instant' as ScrollBehavior });
+        firstLoad = false;
+      });
+      initReveal();
+    </script>
+
+    <style>
+      .skip {
+        position: absolute;
+        left: -9999px;
+        top: 0;
+        z-index: 999;
+        padding: 12px 20px;
+        background: var(--accent);
+        color: #07080d;
+        border-radius: 0 0 8px 0;
+      }
+      .skip:focus {
+        left: 0;
+      }
+    </style>
+  </body>
+</html>

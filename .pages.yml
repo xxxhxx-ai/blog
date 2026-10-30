@@ -1,0 +1,77 @@
+# ============================================================
+# Pages CMS 配置 —— 免费的网页后台
+# 打开 https://app.pagescms.org 用 GitHub 登录，选择本仓库，
+# 就能在网页上写文章、传图片，保存即自动发布。
+# ============================================================
+
+media: public/uploads
+
+content:
+  - name: posts
+    label: 文章
+    type: collection
+    path: src/content/posts
+    filename:
+      template: "{year}-{month}-{day}-{primary}.md"
+    view:
+      fields: [title, pubDate, category, draft]
+      primary: title
+      sort: [pubDate, desc]
+    fields:
+      - name: title
+        label: 标题
+        type: string
+        required: true
+
+      - name: description
+        label: 摘要
+        description: 显示在列表卡片上的一句话，40–80 字最好
+        type: text
+        required: true
+
+      - name: pubDate
+        label: 发布日期
+        type: date
+        required: true
+        options:
+          format: yyyy-MM-dd
+
+      - name: category
+        label: 分类
+        type: select
+        required: true
+        options:
+          values:
+            - 学习笔记
+            - 项目作品
+            - 技术折腾
+            - 随笔
+
+      - name: tags
+        label: 标签
+        description: 每行一个，或用英文逗号分隔
+        type: string
+        list: true
+        required: false
+
+      - name: featured
+        label: 首页精选
+        description: 打开后会出现在首页「值得先看的两篇」里
+        type: boolean
+        default: false
+
+      - name: draft
+        label: 草稿
+        description: 打开后不会发布
+        type: boolean
+        default: false
+
+      - name: index
+        label: 卡片序号
+        description: 卡片左上角的数字，可留空
+        type: string
+        required: false
+
+      - name: body
+        label: 正文
+        type: rich-text

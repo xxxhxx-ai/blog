@@ -1,0 +1,170 @@
+---
+interface Props {
+  href: string;
+  title: string;
+  description: string;
+  date: Date;
+  category: string;
+  tags?: string[];
+  index?: string;
+  featured?: boolean;
+  words?: number;
+}
+
+const { href, title, description, date, category, tags = [], index, featured, words } = Astro.props;
+
+const d = new Date(date);
+const iso = d.toISOString().slice(0, 10);
+const shown = `${d.getFullYear()}.${String(d.getMonth() + 1).padStart(2, '0')}.${String(d.getDate()).padStart(2, '0')}`;
+const minutes = words ? Math.max(1, Math.round(words / 350)) : null;
+---
+
+<article class:list={['post-card panel corners reveal', { featured }]}>
+  <a href={href} class="hit" aria-label={title}></a>
+
+  <div class="no mono" aria-hidden="true">{index ?? '·'}</div>
+
+  <div class="body">
+    <div class="meta">
+      <span class="cat mono">{category}</span>
+      <span class="dash" aria-hidden="true"></span>
+      <time datetime={iso} class="mono">{shown}</time>
+      {minutes && <span class="read mono">/ {minutes} MIN</span>}
+    </div>
+
+    <h3 class="title">{title}</h3>
+    <p class="desc">{description}</p>
+
+    <div class="foot">
+      {tags.slice(0, 3).map((t) => (
+        <span class="chip">{t}</span>
+      ))}
+      <span class="arrow" aria-hidden="true">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+          <path d="M5 12h13M12 5.5 18.5 12 12 18.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+      </span>
+    </div>
+  </div>
+</article>
+
+<style>
+  .post-card {
+    position: relative;
+    padding: 26px 26px 22px;
+    display: grid;
+    grid-template-columns: 46px 1fr;
+    gap: 18px;
+    overflow: hidden;
+  }
+  .post-card:hover {
+    transform: translateY(-3px);
+  }
+  .hit {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+  }
+
+  .no {
+    font-size: 26px;
+    color: var(--text-3);
+    opacity: 0.4;
+    line-height: 1;
+    padding-top: 3px;
+    transition: all 0.3s ease;
+    letter-spacing: -0.04em;
+  }
+  .post-card:hover .no {
+    color: var(--accent);
+    opacity: 0.9;
+  }
+
+  .body { min-width: 0; }
+
+  .meta {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    font-size: 10.5px;
+    letter-spacing: 0.1em;
+    color: var(--text-3);
+    margin-bottom: 11px;
+    flex-wrap: wrap;
+  }
+  .cat { color: var(--accent-2); }
+  .dash {
+    width: 12px;
+    height: 1px;
+    background: var(--line-strong);
+  }
+  .read { opacity: 0.7; }
+
+  .title {
+    font-size: 19.5px;
+    line-height: 1.45;
+    margin-bottom: 9px;
+    transition: color 0.26s ease;
+    position: relative;
+    z-index: 3;
+    pointer-events: none;
+  }
+  .post-card:hover .title { color: var(--accent); }
+
+  .desc {
+    font-size: 13.8px;
+    line-height: 1.75;
+    color: var(--text-2);
+    margin-bottom: 16px;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .foot {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    flex-wrap: wrap;
+  }
+  .arrow {
+    margin-left: auto;
+    color: var(--text-3);
+    opacity: 0;
+    transform: translateX(-6px);
+    transition: all 0.3s ease;
+  }
+  .post-card:hover .arrow {
+    opacity: 1;
+    transform: none;
+    color: var(--accent);
+  }
+
+  .featured::after {
+    content: "FEATURED";
+    position: absolute;
+    top: 0;
+    right: 0;
+    font-family: var(--font-mono);
+    font-size: 9px;
+    letter-spacing: 0.14em;
+    color: var(--accent);
+    background: var(--accent-soft);
+    border-left: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+    padding: 4px 10px;
+    border-bottom-left-radius: 8px;
+  }
+
+  @media (max-width: 560px) {
+    .post-card {
+      grid-template-columns: 1fr;
+      gap: 8px;
+      padding: 22px 20px 18px;
+    }
+    .no { font-size: 15px; opacity: 0.35; }
+    .title { font-size: 17.5px; }
+  }
+</style>

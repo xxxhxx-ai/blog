@@ -1,0 +1,176 @@
+---
+const year = new Date().getFullYear();
+
+const groups = [
+  {
+    title: '内容',
+    items: [
+      { href: '/posts', label: '全部文章' },
+      { href: '/categories', label: '分类' },
+      { href: '/archive', label: '归档' },
+      { href: '/works', label: '作品集' },
+    ],
+  },
+  {
+    title: '关于',
+    items: [
+      { href: '/about', label: '关于我' },
+      { href: '/resume', label: '简历' },
+      { href: '/sites', label: '我的站点' },
+      { href: '/links', label: '友链' },
+    ],
+  },
+  {
+    title: '互动',
+    items: [
+      { href: '/guestbook', label: '留言板' },
+      { href: '/rss.xml', label: 'RSS 订阅' },
+      { href: '/search', label: '站内搜索' },
+    ],
+  },
+];
+---
+
+<footer class="foot">
+  <div class="shell">
+    <div class="top">
+      <div class="brand-col">
+        <a href="/" class="foot-brand"><span class="mark" aria-hidden="true"></span><span>l<span class="hl">xxx</span>hxx</span></a>
+        <p class="motto">
+          把想法做出来，<br />然后记下来。
+        </p>
+        <div class="sig mono">
+          <span class="dot"></span>SIGNAL / ONLINE
+        </div>
+      </div>
+
+      {groups.map((g) => (
+        <div class="link-col">
+          <h4 class="mono">{g.title}</h4>
+          <ul>
+            {g.items.map((i) => (
+              <li><a href={i.href}>{i.label}</a></li>
+            ))}
+          </ul>
+        </div>
+      ))}
+    </div>
+
+    <div class="bottom">
+      <span class="mono">© {year} lxxxhxx</span>
+      <span class="sep" aria-hidden="true"></span>
+      <span class="mono">BUILT WITH ASTRO · STATIC · NO TRACKING</span>
+      <span class="grow"></span>
+      <span class="mono beian">备案号占位 · 用国内服务器时替换</span>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .foot {
+    margin-top: 96px;
+    border-top: 1px solid var(--line);
+    background: linear-gradient(180deg, transparent, var(--bg-1));
+  }
+  .top {
+    display: grid;
+    grid-template-columns: 1.6fr repeat(3, 1fr);
+    gap: 40px;
+    padding: 56px 0 44px;
+  }
+
+  .foot-brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    font-family: var(--font-mono);
+    font-size: 17px;
+    letter-spacing: 0.1em;
+    margin-bottom: 16px;
+  }
+  .mark {
+    width: 8px;
+    height: 8px;
+    border: 1px solid var(--accent-2);
+    transform: rotate(45deg);
+  }
+  .hl { color: var(--accent); }
+
+  .motto {
+    font-family: var(--font-serif);
+    font-size: 15px;
+    line-height: 1.85;
+    color: var(--text-3);
+    margin-bottom: 22px;
+  }
+  .sig {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 10.5px;
+    letter-spacing: 0.16em;
+    color: var(--text-3);
+  }
+  .dot {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: var(--accent-2);
+    box-shadow: 0 0 10px var(--accent-2);
+    animation: pulseRing 2.6s ease-out infinite;
+  }
+
+  h4 {
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--text-3);
+    font-weight: 500;
+    margin-bottom: 16px;
+  }
+  ul { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+  li a {
+    font-size: 13.5px;
+    color: var(--text-2);
+    transition: color 0.22s ease, padding-left 0.22s ease;
+  }
+  li a:hover {
+    color: var(--accent);
+    padding-left: 5px;
+  }
+
+  .bottom {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    padding: 20px 0 34px;
+    border-top: 1px solid var(--line-soft);
+    font-size: 10.5px;
+    letter-spacing: 0.1em;
+    color: var(--text-3);
+  }
+  .sep {
+    width: 3px;
+    height: 3px;
+    border-radius: 50%;
+    background: var(--text-3);
+    opacity: 0.6;
+  }
+  .grow { flex: 1; }
+  .beian { opacity: 0.65; }
+
+  @media (max-width: 900px) {
+    .top {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 34px 24px;
+      padding: 44px 0 34px;
+    }
+    .brand-col { grid-column: 1 / -1; }
+  }
+  @media (max-width: 520px) {
+    .top { grid-template-columns: 1fr; }
+    .grow { display: none; }
+  }
+</style>

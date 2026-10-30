@@ -1,0 +1,124 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHeader from '../components/PageHeader.astro';
+import { getPosts, groupByYear, postUrl, fmtDate } from '../lib/posts';
+
+const posts = await getPosts();
+const years = groupByYear(posts);
+const total = posts.length;
+---
+
+<BaseLayout title="归档" description="按年月排列的全部文章目录。">
+  <PageHeader
+    kicker="// ARCHIVE"
+    title="归档"
+    desc="一个站点的年轮。所有写过的、还留在这里的东西。"
+    meta={`${total} POSTS · ${years.length} YEARS`}
+    chibiTone={3}
+  />
+
+  <div class="shell body">
+    {years.map(([year, list], yi) => (
+      <section class="year reveal">
+        <div class="y-head">
+          <h2 class="mono">{year}</h2>
+          <span class="y-count mono">{list.length} 篇</span>
+          <span class="y-line" aria-hidden="true"></span>
+        </div>
+
+        <ul class="y-list">
+          {list.map((p, i) => (
+            <li>
+              <a href={postUrl(p)}>
+                <span class="md mono">{fmtDate(p.data.pubDate).slice(5)}</span>
+                <span class="tl">{p.data.title}</span>
+                <span class="tc mono">{p.data.category}</span>
+                <span class="ar" aria-hidden="true">→</span>
+              </a>
+            </li>
+          ))}
+        </ul>
+      </section>
+    ))}
+  </div>
+</BaseLayout>
+
+<style>
+  .body { padding-top: 30px; }
+
+  .year { margin-bottom: 40px; }
+  .y-head {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 6px;
+  }
+  .y-head h2 {
+    font-size: 30px;
+    letter-spacing: 0.04em;
+    color: var(--text);
+    line-height: 1;
+  }
+  .y-count {
+    font-size: 10.5px;
+    letter-spacing: 0.1em;
+    color: var(--text-3);
+    padding-bottom: 2px;
+  }
+  .y-line {
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, var(--line), transparent);
+  }
+
+  .y-list { list-style: none; }
+  .y-list li { border-bottom: 1px solid var(--line-soft); }
+  .y-list li a {
+    display: grid;
+    grid-template-columns: 62px 1fr auto 22px;
+    align-items: baseline;
+    gap: 12px;
+    padding: 13px 6px;
+    border-radius: 7px;
+    transition: background-color 0.2s ease, padding-left 0.26s ease;
+  }
+  .y-list li a:hover {
+    background: var(--accent-soft);
+    padding-left: 14px;
+  }
+  .md {
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    color: var(--text-3);
+  }
+  .tl {
+    font-size: 14.6px;
+    color: var(--text);
+    line-height: 1.5;
+    transition: color 0.2s ease;
+  }
+  .y-list li a:hover .tl { color: var(--accent); }
+  .tc {
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    color: var(--accent-2);
+    opacity: 0.8;
+    white-space: nowrap;
+  }
+  .ar {
+    color: var(--accent-2);
+    opacity: 0;
+    transition: all 0.24s ease;
+    font-size: 12px;
+  }
+  .y-list li a:hover .ar { opacity: 1; }
+
+  @media (max-width: 620px) {
+    .y-list li a {
+      grid-template-columns: 52px 1fr;
+      gap: 8px;
+    }
+    .tc, .ar { display: none; }
+    .y-head h2 { font-size: 25px; }
+  }
+</style>

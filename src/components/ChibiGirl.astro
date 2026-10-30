@@ -1,0 +1,150 @@
+---
+/**
+ * 【已弃用】矢量版 Q 版少女，2026-10-30 起被 ChibiArt.astro（水彩插画版）取代。
+ * 保留此文件仅作回退用；全站已不再引用它。
+ */
+interface Props {
+  size?: number;
+  /** 色调：0 紫 / 1 青 / 2 粉 / 3 蓝 */
+  tone?: 0 | 1 | 2 | 3;
+  blink?: boolean;
+  class?: string;
+}
+
+const { size = 120, tone = 0, blink = true, class: cls = '' } = Astro.props;
+
+const tones = [
+  { hair1: '#b794ff', hair2: '#ff9ad5', iris: '#8b6cf0' },
+  { hair1: '#6ee7f9', hair2: '#8ba4ff', iris: '#2f9fc4' },
+  { hair1: '#ffb3d9', hair2: '#b794ff', iris: '#e06aa8' },
+  { hair1: '#9db4ff', hair2: '#6ee7f9', iris: '#5a7fe0' },
+];
+const t = tones[tone];
+const uid = `ch${tone}${Math.random().toString(36).slice(2, 7)}`;
+---
+
+<svg
+  class:list={['chibi', cls]}
+  width={size}
+  height={size}
+  viewBox="0 0 200 200"
+  fill="none"
+  aria-hidden="true"
+>
+  <defs>
+    <linearGradient id={`${uid}-hair`} x1="0.15" y1="0" x2="0.85" y2="1">
+      <stop offset="0" stop-color={t.hair1} />
+      <stop offset="1" stop-color={t.hair2} />
+    </linearGradient>
+    <linearGradient id={`${uid}-iris`} x1="0.5" y1="0" x2="0.5" y2="1">
+      <stop offset="0" stop-color={t.hair2} />
+      <stop offset="0.5" stop-color={t.iris} />
+      <stop offset="1" stop-color="#4a3f7a" />
+    </linearGradient>
+    <radialGradient id={`${uid}-glow`}>
+      <stop offset="0" stop-color={t.hair1} stop-opacity="0.32" />
+      <stop offset="1" stop-color={t.hair1} stop-opacity="0" />
+    </radialGradient>
+  </defs>
+
+  <!-- 光晕 + 环 -->
+  <circle cx="100" cy="96" r="88" fill={`url(#${uid}-glow)`} />
+  <circle
+    cx="100" cy="96" r="76"
+    stroke={t.hair1} stroke-width="0.9" stroke-dasharray="2.5 7"
+    opacity="0.4" class="ring"
+  />
+
+  <!-- 后发 -->
+  <ellipse cx="100" cy="94" rx="58" ry="56" fill={`url(#${uid}-hair)`} opacity="0.95" />
+  <!-- 两侧发束 -->
+  <path d="M44 92c-6 34-4 58 4 72 3 6 10 5 11-2 3-20 3-46-1-66z" fill={`url(#${uid}-hair)`} />
+  <path d="M156 92c6 34 4 58-4 72-3 6-10 5-11-2-3-20-3-46 1-66z" fill={`url(#${uid}-hair)`} />
+
+  <!-- 呆毛 -->
+  <path d="M106 40c-3-13 5-19 12-17-7 4-8 10-4 17z" fill={t.hair1} />
+
+  <!-- 身体：肩 + 衣领 -->
+  <path d="M84 134h32v12c0 6-8 10-16 10s-16-4-16-10z" fill="#f7ddd5" />
+  <path
+    d="M100 168c-24 0-44 12-48 32h96c-4-20-24-32-48-32z"
+    fill={t.hair1}
+    opacity="0.26"
+  />
+  <path d="M88 174l12 14 12-14" stroke={t.hair1} stroke-width="2" opacity="0.7" fill="none" stroke-linejoin="round" />
+
+  <!-- 脸 -->
+  <path
+    d="M100 58c23 0 42 18 42 44 0 24-10 40-24 48-5 3-11 5-18 5s-13-2-18-5c-14-8-24-24-24-48 0-26 19-44 42-44z"
+    fill="#fdeee8"
+  />
+
+  <!-- 刘海：三缕 -->
+  <path
+    d="M58 100c-1-30 18-48 42-48s43 18 42 48c-5-14-12-22-20-26-3 10-8 16-14 18-3-9-5-14-8-16-3 6-5 12-8 16-6-2-11-8-14-18-8 4-15 12-20 26z"
+    fill={`url(#${uid}-hair)`}
+  />
+  <!-- 鬓发 -->
+  <path d="M60 96c-4 20-3 34 1 44-8-10-9-30-1-44z" fill={t.hair1} opacity="0.9" />
+  <path d="M140 96c4 20 3 34-1 44 8-10 9-30 1-44z" fill={t.hair2} opacity="0.85" />
+
+  <!-- 眉毛 -->
+  <path d="M69 90q9-4 18-1" stroke="#4a3f5e" stroke-width="1.8" stroke-linecap="round" opacity="0.55" />
+  <path d="M113 89q9-3 18 1" stroke="#4a3f5e" stroke-width="1.8" stroke-linecap="round" opacity="0.55" />
+
+  <!-- 眼睛 -->
+  <g class={blink ? 'eyes' : ''}>
+    <!-- 左 -->
+    <ellipse cx="79" cy="107" rx="9.5" ry="11.5" fill="#242a4a" />
+    <ellipse cx="79" cy="109" rx="7.2" ry="8.8" fill={`url(#${uid}-iris)`} />
+    <circle cx="79" cy="110.5" r="4.1" fill="#191e34" opacity="0.9" />
+    <circle cx="75.6" cy="103.5" r="3" fill="#ffffff" />
+    <circle cx="83" cy="113" r="1.5" fill="#ffffff" opacity="0.85" />
+    <!-- 右 -->
+    <ellipse cx="121" cy="107" rx="9.5" ry="11.5" fill="#242a4a" />
+    <ellipse cx="121" cy="109" rx="7.2" ry="8.8" fill={`url(#${uid}-iris)`} />
+    <circle cx="121" cy="110.5" r="4.1" fill="#191e34" opacity="0.9" />
+    <circle cx="117.6" cy="103.5" r="3" fill="#ffffff" />
+    <circle cx="125" cy="113" r="1.5" fill="#ffffff" opacity="0.85" />
+  </g>
+  <!-- 上眼睑 -->
+  <path d="M69.5 99.5q9.5-7 19 0" stroke="#191e34" stroke-width="3" stroke-linecap="round" fill="none" />
+  <path d="M111.5 99.5q9.5-7 19 0" stroke="#191e34" stroke-width="3" stroke-linecap="round" fill="none" />
+  <!-- 眼尾睫毛 -->
+  <path d="M68 99l-4-4M132 99l4-4" stroke="#191e34" stroke-width="2" stroke-linecap="round" opacity="0.8" />
+
+  <!-- 腮红 -->
+  <ellipse cx="66" cy="122" rx="8" ry="4.5" fill={t.hair2} opacity="0.34" />
+  <ellipse cx="134" cy="122" rx="8" ry="4.5" fill={t.hair2} opacity="0.34" />
+
+  <!-- 嘴 -->
+  <path d="M95.5 126q4.5 5 9 0" stroke="#3a2f4e" stroke-width="1.8" stroke-linecap="round" fill="none" opacity="0.7" />
+
+  <!-- 发饰 -->
+  <g opacity="0.95">
+    <rect x="136" y="60" width="10" height="10" rx="1.5" fill={t.hair2} transform="rotate(22 141 65)" />
+    <rect x="52" y="66" width="6.5" height="6.5" rx="1" fill={t.hair1} transform="rotate(-18 55 69)" opacity="0.85" />
+  </g>
+
+  <!-- 星点 -->
+  <g fill={t.hair1} opacity="0.7">
+    <path d="M172 42l1.6 4.4 4.4 1.6-4.4 1.6L172 54l-1.6-4.4L166 48l4.4-1.6z" />
+    <path d="M26 140l1.1 3 3 1.1-3 1.1-1.1 3-1.1-3-3-1.1 3-1.1z" opacity="0.6" />
+  </g>
+</svg>
+
+<style>
+  .chibi { overflow: visible; }
+  .ring {
+    transform-origin: 100px 96px;
+    animation: spinSlow 34s linear infinite;
+  }
+  .eyes {
+    transform-origin: 100px 107px;
+    animation: chibiBlink 6.5s infinite;
+  }
+  @keyframes chibiBlink {
+    0%, 92%, 100% { transform: scaleY(1); }
+    94%, 96% { transform: scaleY(0.06); }
+  }
+</style>

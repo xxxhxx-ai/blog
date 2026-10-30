@@ -1,0 +1,100 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHeader from '../components/PageHeader.astro';
+import Giscus from '../components/Giscus.astro';
+import ChibiArt from '../components/ChibiArt.astro';
+---
+
+<BaseLayout title="留言板" description="随便说点什么。">
+  <PageHeader
+    kicker="// GUESTBOOK"
+    title="留言板"
+    desc="不用有正事。路过说句话、吐槽一下排版、或者告诉我哪篇文章帮到你了，都行。"
+    meta="OPEN · 永久保留"
+    chibiTone={3}
+  />
+
+  <div class="shell body">
+    <div class="hint-grid">
+      <div class="hint panel">
+        <p class="k mono">// 可以留什么</p>
+        <ul>
+          <li>想让我写某个话题</li>
+          <li>发现文章里有错误</li>
+          <li>你的站，想换个友链</li>
+          <li>纯粹想打个招呼</li>
+        </ul>
+      </div>
+      <div class="hint panel">
+        <p class="k mono">// 关于登录</p>
+        <p class="hint-txt">
+          留言用的是 GitHub 账号登录，这是唯一能免费又不需要我维护服务器的方式。
+          如果你没有账号，也可以直接发邮件给我。
+        </p>
+        <a href="mailto:hello@example.com" class="btn">发邮件</a>
+      </div>
+      <div class="hint-art">
+        <ChibiArt size={150} tone={0} />
+      </div>
+    </div>
+
+    <Giscus mode="guestbook" />
+  </div>
+</BaseLayout>
+
+<style>
+  .body { padding-top: 34px; }
+
+  .hint-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 150px;
+    gap: 14px;
+    margin-bottom: 40px;
+  }
+  .hint { padding: 22px 24px; }
+  .k {
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    color: var(--accent-2);
+    margin-bottom: 12px;
+  }
+  .hint ul {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .hint li {
+    font-size: 13.4px;
+    color: var(--text-2);
+    padding-left: 16px;
+    position: relative;
+    line-height: 1.7;
+  }
+  .hint li::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 9px;
+    width: 5px;
+    height: 5px;
+    border: 1px solid var(--accent);
+    transform: rotate(45deg);
+  }
+  .hint-txt {
+    font-size: 13.2px;
+    color: var(--text-2);
+    line-height: 1.8;
+    margin-bottom: 16px;
+  }
+  .hint-art {
+    display: grid;
+    place-items: center;
+    opacity: 0.85;
+  }
+
+  @media (max-width: 860px) {
+    .hint-grid { grid-template-columns: 1fr; }
+    .hint-art { display: none; }
+  }
+</style>

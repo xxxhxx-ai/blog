@@ -1,0 +1,165 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PageHeader from '../../components/PageHeader.astro';
+import ChibiArt from '../../components/ChibiArt.astro';
+import { getPosts, CATEGORIES, categoryCount, postUrl, fmtDate } from '../../lib/posts';
+
+const posts = await getPosts();
+const counts = categoryCount(posts);
+---
+
+<BaseLayout title="分类" description="按主题浏览 lxxxhxx 的所有文章。">
+  <PageHeader
+    kicker="// CATEGORIES"
+    title="分类"
+    desc="四个抽屉。每个抽屉里的东西气质不太一样，挑你想看的那个打开。"
+    meta={`04 CATEGORIES · ${posts.length} POSTS`}
+    chibiTone={1}
+  />
+
+  <div class="shell body">
+    {CATEGORIES.map((c, i) => {
+      const list = posts.filter((p) => p.data.category === c.name);
+      return (
+        <section class="cat-block reveal">
+          <div class="cat-side">
+            <span class="num mono">0{i + 1}</span>
+            <ChibiArt size={116} tone={c.tone} class="side-girl" />
+          </div>
+
+          <div class="cat-main">
+            <div class="cat-head">
+              <h2><a href={`/categories/${c.slug}`}>{c.name}</a></h2>
+              <span class="code mono">{c.code} · {String(counts.get(c.name) ?? 0).padStart(2, '0')}</span>
+            </div>
+            <p class="cat-desc">{c.desc}</p>
+
+            <ul class="cat-list">
+              {list.length === 0 && <li class="empty mono">这个分类还没有文章</li>}
+              {list.map((p, j) => (
+                <li>
+                  <a href={postUrl(p)}>
+                    <span class="li-no mono">{String(j + 1).padStart(2, '0')}</span>
+                    <span class="li-title">{p.data.title}</span>
+                    <span class="li-date mono">{fmtDate(p.data.pubDate)}</span>
+                  </a>
+                </li>
+              ))}
+            </ul>
+
+            <a href={`/categories/${c.slug}`} class="more mono">查看全部 →</a>
+          </div>
+        </section>
+      );
+    })}
+  </div>
+</BaseLayout>
+
+<style>
+  .body { padding-top: 20px; display: flex; flex-direction: column; gap: 8px; }
+
+  .cat-block {
+    display: grid;
+    grid-template-columns: 140px 1fr;
+    gap: 20px;
+    padding: 34px 0;
+    border-bottom: 1px solid var(--line-soft);
+  }
+  .cat-block:last-child { border-bottom: none; }
+
+  .cat-side {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+  }
+  .num {
+    font-size: 11px;
+    letter-spacing: 0.16em;
+    color: var(--text-3);
+    opacity: 0.6;
+  }
+  :global(.side-girl) { opacity: 1; }
+
+  .cat-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 8px;
+  }
+  .cat-head h2 { font-size: 24px; }
+  .cat-head h2 a { transition: color 0.24s ease; }
+  .cat-head h2 a:hover { color: var(--accent); }
+  .code {
+    font-size: 9.5px;
+    letter-spacing: 0.14em;
+    color: var(--accent-2);
+    opacity: 0.8;
+    white-space: nowrap;
+  }
+  .cat-desc {
+    font-size: 13.4px;
+    color: var(--text-2);
+    line-height: 1.8;
+    margin-bottom: 16px;
+    max-width: min(56ch, 100%);
+  }
+
+  .cat-list { list-style: none; }
+  .cat-list li { border-top: 1px solid var(--line-soft); }
+  .cat-list li a {
+    display: grid;
+    grid-template-columns: 30px 1fr auto;
+    gap: 10px;
+    align-items: baseline;
+    padding: 10px 4px;
+    transition: background-color 0.2s ease, padding-left 0.24s ease;
+    border-radius: 6px;
+  }
+  .cat-list li a:hover {
+    background: var(--accent-soft);
+    padding-left: 10px;
+  }
+  .li-no { font-size: 10px; color: var(--text-3); opacity: 0.7; }
+  .li-title {
+    font-size: 14px;
+    color: var(--text);
+    transition: color 0.2s ease;
+  }
+  .cat-list li a:hover .li-title { color: var(--accent); }
+  .li-date {
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    color: var(--text-3);
+    white-space: nowrap;
+  }
+  .empty {
+    font-size: 11.5px;
+    color: var(--text-3);
+    padding: 12px 4px;
+  }
+
+  .more {
+    display: inline-block;
+    margin-top: 14px;
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    color: var(--accent-2);
+    transition: color 0.2s ease;
+  }
+  .more:hover { color: var(--accent); }
+
+  @media (max-width: 720px) {
+    .cat-block { grid-template-columns: 1fr; gap: 10px; padding: 28px 0; }
+    .cat-side {
+      flex-direction: row;
+      justify-content: flex-start;
+      align-items: center;
+      gap: 14px;
+    }
+    .li-date { display: none; }
+    .cat-list li a { grid-template-columns: 26px 1fr; }
+  }
+</style>

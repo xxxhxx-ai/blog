@@ -1,0 +1,71 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import ChibiArt from '../components/ChibiArt.astro';
+---
+
+<BaseLayout title="页面走丢了" description="404">
+  <div class="shell wrap">
+    <div class="art">
+      <ChibiArt size={210} tone={2} />
+    </div>
+
+    <div class="txt">
+      <p class="code mono">// ERROR 404</p>
+      <h1>这页好像不在这里</h1>
+      <p class="desc">
+        可能是链接写错了，也可能是我把文章挪走了。
+        上面那只少女也很困惑，她指向的是——回到有内容的地方。
+      </p>
+      <div class="acts">
+        <a href="/" class="btn primary">回首页</a>
+        <a href="/posts" class="btn">看全部文章</a>
+        <a href="/search" class="btn">搜索一下</a>
+      </div>
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  .wrap {
+    display: grid;
+    grid-template-columns: 240px 1fr;
+    gap: 48px;
+    align-items: center;
+    padding-top: 80px;
+    padding-bottom: 100px;
+    min-height: 62vh;
+  }
+  .art { animation: floaty 7s ease-in-out infinite; }
+
+  .code {
+    font-size: 11px;
+    letter-spacing: 0.24em;
+    color: var(--accent-3);
+    margin-bottom: 14px;
+  }
+  h1 {
+    font-size: clamp(28px, 4vw, 42px);
+    margin-bottom: 16px;
+  }
+  .desc {
+    font-size: 14.6px;
+    color: var(--text-2);
+    line-height: 1.95;
+    max-width: min(46ch, 100%);
+    margin-bottom: 28px;
+  }
+  .acts { display: flex; gap: 10px; flex-wrap: wrap; }
+
+  @media (max-width: 760px) {
+    .wrap {
+      grid-template-columns: 1fr;
+      gap: 20px;
+      padding-top: 40px;
+      text-align: center;
+      justify-items: center;
+    }
+    .art { max-width: 160px; }
+    .desc { text-align: left; }
+    .acts { justify-content: center; }
+  }
+</style>

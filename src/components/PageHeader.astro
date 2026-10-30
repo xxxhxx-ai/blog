@@ -1,0 +1,101 @@
+---
+/**
+ * 内页通用页头
+ */
+interface Props {
+  kicker: string;
+  title: string;
+  desc?: string;
+  meta?: string;
+  chibiTone?: 0 | 1 | 2 | 3;
+}
+
+import ChibiArt from './ChibiArt.astro';
+
+const { kicker, title, desc, meta, chibiTone } = Astro.props;
+---
+
+<header class="page-head">
+  <div class="shell inner">
+    <div class="txt">
+      <p class="kicker mono">{kicker}</p>
+      <h1>{title}</h1>
+      {desc && <p class="desc">{desc}</p>}
+      {meta && <p class="meta mono">{meta}</p>}
+    </div>
+    {chibiTone !== undefined && (
+      <div class="deco">
+        <ChibiArt size={132} tone={chibiTone} />
+      </div>
+    )}
+  </div>
+  <div class="scan" aria-hidden="true"></div>
+</header>
+
+<style>
+  .page-head {
+    position: relative;
+    padding: 68px 0 34px;
+    border-bottom: 1px solid var(--line);
+    overflow: hidden;
+  }
+  .page-head::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse 60% 100% at 82% 0%, var(--accent-soft), transparent 70%);
+    pointer-events: none;
+  }
+  .inner {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 24px;
+    position: relative;
+    z-index: 2;
+  }
+  .kicker {
+    font-size: 10.5px;
+    letter-spacing: 0.2em;
+    color: var(--accent-2);
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+  h1 {
+    font-size: clamp(28px, 4vw, 40px);
+    letter-spacing: 0.01em;
+    margin-bottom: 12px;
+  }
+  .desc {
+    font-size: 14.6px;
+    color: var(--text-2);
+    line-height: 1.85;
+    max-width: min(58ch, 100%);
+  }
+  .meta {
+    margin-top: 14px;
+    font-size: 10.5px;
+    letter-spacing: 0.12em;
+    color: var(--text-3);
+  }
+  .deco {
+    flex-shrink: 0;
+    width: 132px;
+    opacity: 0.9;
+    animation: floaty 8s ease-in-out infinite;
+  }
+  .scan {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -1px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--accent-2), transparent);
+    opacity: 0.5;
+  }
+
+  @media (max-width: 720px) {
+    .page-head { padding: 44px 0 26px; }
+    .deco { display: none; }
+  }
+</style>

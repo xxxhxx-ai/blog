@@ -1,0 +1,147 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHeader from '../components/PageHeader.astro';
+import { FRIENDS } from '../data/site';
+---
+
+<BaseLayout title="友链" description="这里的朋友们。">
+  <PageHeader
+    kicker="// FRIENDS"
+    title="友链"
+    desc="互联网上还愿意自己搭个站的人，越来越少了。这里是其中一些。"
+    meta={`${FRIENDS.length} LINKS`}
+    chibiTone={2}
+  />
+
+  <div class="shell body">
+    <div class="grid">
+      {FRIENDS.map((f, i) => (
+        <a href={f.url} class="friend panel corners reveal" target="_blank" rel="noopener noreferrer">
+          <span class="avatar mono" aria-hidden="true">{f.avatar}</span>
+          <div class="f-body">
+            <h3>{f.name}</h3>
+            <p>{f.desc}</p>
+          </div>
+          <span class="f-no mono">{String(i + 1).padStart(2, '0')}</span>
+        </a>
+      ))}
+    </div>
+
+    <section class="apply panel reveal">
+      <div class="apply-head">
+        <p class="kicker mono">// EXCHANGE</p>
+        <h2>想交换友链？</h2>
+      </div>
+      <p class="apply-desc">
+        只要你的站是自己在维护的、有实际内容的，都欢迎。把下面的信息发到
+        <a href="/guestbook">留言板</a> 或邮箱，我看到就会加上。
+      </p>
+      <pre class="code-block"><code>站点名称：你的站名
+站点地址：https://example.com
+一句话介绍：一句话说清你写什么
+头像/图标：图片地址（可选）</code></pre>
+      <p class="apply-tip mono">
+        友情提示：这个站不接受纯 SEO 站、采集站和长期不更新的站。
+      </p>
+    </section>
+  </div>
+</BaseLayout>
+
+<style>
+  .body { padding-top: 34px; }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+    margin-bottom: 30px;
+  }
+
+  .friend {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 20px 22px;
+    position: relative;
+  }
+  .friend:hover { transform: translateY(-3px); }
+
+  .avatar {
+    width: 46px;
+    height: 46px;
+    flex-shrink: 0;
+    display: grid;
+    place-items: center;
+    border-radius: 11px;
+    border: 1px solid var(--line-strong);
+    background: var(--accent-soft);
+    color: var(--accent);
+    font-size: 16px;
+    letter-spacing: 0;
+  }
+
+  .f-body { min-width: 0; flex: 1; }
+  .f-body h3 {
+    font-size: 16.5px;
+    margin-bottom: 4px;
+    transition: color 0.24s ease;
+  }
+  .friend:hover .f-body h3 { color: var(--accent); }
+  .f-body p {
+    font-size: 12.6px;
+    color: var(--text-3);
+    line-height: 1.65;
+  }
+  .f-no {
+    font-size: 10px;
+    color: var(--text-3);
+    opacity: 0.4;
+    align-self: flex-start;
+  }
+
+  .apply { padding: 30px 32px; }
+  .kicker {
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    color: var(--accent-2);
+    margin-bottom: 8px;
+  }
+  .apply-head h2 { font-size: 22px; }
+  .apply-desc {
+    font-size: 13.8px;
+    color: var(--text-2);
+    line-height: 1.9;
+    margin: 14px 0 20px;
+    max-width: min(62ch, 100%);
+  }
+  .apply-desc a {
+    color: var(--accent-2);
+    border-bottom: 1px solid var(--line-strong);
+  }
+  .code-block {
+    background: var(--bg-2);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 18px 20px;
+    overflow-x: auto;
+    margin-bottom: 16px;
+  }
+  .code-block code {
+    font-family: var(--font-mono);
+    font-size: 12.4px;
+    line-height: 1.9;
+    color: var(--text-2);
+    white-space: pre;
+  }
+  .apply-tip {
+    font-size: 10.5px;
+    letter-spacing: 0.06em;
+    color: var(--text-3);
+    opacity: 0.85;
+  }
+
+  @media (max-width: 700px) {
+    .grid { grid-template-columns: 1fr; }
+    .apply { padding: 24px 20px; }
+  }
+</style>

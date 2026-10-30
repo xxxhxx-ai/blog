@@ -1,0 +1,234 @@
+---
+/**
+ * 首页主视觉 —— 水彩插画 + 多层动态
+ * 动态构成：光环反向旋转 / 角色浮动 / 呼吸缩放 / 粒子上升 / 扫描线 / 鼠标视差
+ * 全部 CSS 驱动，尊重 prefers-reduced-motion
+ */
+import { Image } from 'astro:assets';
+import girl from '../assets/hero/girl-full.png';
+
+interface Props {
+  class?: string;
+}
+const { class: cls = '' } = Astro.props;
+
+// 粒子：位置、延迟、大小都由序号派生，保证结果稳定
+const sparks = Array.from({ length: 14 }, (_, i) => {
+  const seed = (i * 37) % 100;
+  return {
+    x: 6 + ((seed * 7) % 88),
+    y: 55 + ((seed * 13) % 40),
+    s: 2 + (i % 3),
+    delay: (i * 0.73) % 6,
+    dur: 7 + (i % 5) * 1.4,
+  };
+});
+---
+
+<div class:list={['stage', cls]} id="hero-stage">
+  <!-- 底部光晕 -->
+  <div class="halo" aria-hidden="true"></div>
+
+  <!-- 旋转光环 -->
+  <svg class="rings" viewBox="0 0 400 548" fill="none" aria-hidden="true">
+    <g class="ring-a" stroke="#6ee7f9">
+      <circle cx="200" cy="274" r="188" stroke-width="1.4" stroke-dasharray="2 7" opacity="0.55" />
+      <circle cx="200" cy="274" r="188" stroke-width="3" stroke-linecap="round" stroke-dasharray="52 1129" opacity="0.72" />
+    </g>
+    <g class="ring-b" stroke="#b794ff">
+      <circle cx="200" cy="274" r="166" stroke-width="1" opacity="0.2" />
+      <circle cx="200" cy="274" r="166" stroke-width="2" stroke-linecap="round" stroke-dasharray="26 1017" opacity="0.46" />
+      <circle cx="200" cy="274" r="166" stroke-width="1.6" stroke-linecap="round" stroke-dasharray="26 1017" stroke-dashoffset="521" opacity="0.26" />
+    </g>
+  </svg>
+
+  <!-- 角色 -->
+  <div class="figure">
+    <div class="figure-float">
+      <Image
+        src={girl}
+        alt=""
+        width={780}
+        format="webp"
+        quality={86}
+        loading="eager"
+        fetchpriority="high"
+        class="girl-img"
+      />
+    </div>
+  </div>
+
+  <!-- 粒子 -->
+  <div class="sparks" aria-hidden="true">
+    {sparks.map((p) => (
+      <span
+        style={`left:${p.x}%;top:${p.y}%;--s:${p.s}px;--d:${p.delay}s;--t:${p.dur}s`}
+      ></span>
+    ))}
+  </div>
+
+  <!-- 扫描线 -->
+  <div class="scan" aria-hidden="true"></div>
+</div>
+
+<script>
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  function setupHero() {
+    const stage = document.getElementById('hero-stage') as HTMLElement | null;
+    if (!stage || reduce) return;
+    if (stage.dataset.parallax === '1') return;
+    stage.dataset.parallax = '1';
+
+    let raf = 0;
+    stage.addEventListener('mousemove', (e) => {
+      cancelAnimationFrame(raf);
+      raf = requestAnimationFrame(() => {
+        const r = stage.getBoundingClientRect();
+        const x = (e.clientX - r.left) / r.width - 0.5;
+        const y = (e.clientY - r.top) / r.height - 0.5;
+        stage.style.setProperty('--mx', x.toFixed(3));
+        stage.style.setProperty('--my', y.toFixed(3));
+      });
+    });
+    stage.addEventListener('mouseleave', () => {
+      stage.style.setProperty('--mx', '0');
+      stage.style.setProperty('--my', '0');
+    });
+  }
+
+  setupHero();
+  document.addEventListener('astro:page-load', setupHero);
+</script>
+
+<style>
+  .stage {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 73 / 100;
+    --mx: 0;
+    --my: 0;
+    isolation: isolate;
+  }
+
+  /* 光晕 */
+  .halo {
+    position: absolute;
+    inset: -6% -10% 8%;
+    background: radial-gradient(
+      ellipse 62% 52% at 50% 42%,
+      rgba(183, 148, 255, 0.32),
+      rgba(110, 231, 249, 0.12) 46%,
+      transparent 72%
+    );
+    filter: blur(26px);
+    z-index: 0;
+    animation: haloPulse 7s ease-in-out infinite;
+  }
+  @keyframes haloPulse {
+    0%, 100% { opacity: 0.72; transform: scale(0.97); }
+    50% { opacity: 1; transform: scale(1.04); }
+  }
+
+  /* 光环 */
+  .rings {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+    overflow: visible;
+  }
+  .ring-a { transform-origin: 200px 274px; animation: spinSlow 62s linear infinite; }
+  .ring-b { transform-origin: 200px 274px; animation: spinSlow 96s linear infinite reverse; }
+
+  /* 角色 */
+  .figure {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    transform: translate3d(calc(var(--mx) * 16px), calc(var(--my) * 12px), 0);
+    transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+    will-change: transform;
+  }
+  .figure-float {
+    width: 100%;
+    height: 100%;
+    animation: figureFloat 7.5s ease-in-out infinite;
+  }
+  .figure :global(.girl-img) {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    object-position: center bottom;
+    display: block;
+    filter: drop-shadow(0 18px 34px rgba(10, 8, 22, 0.55));
+    animation: breathe 9s ease-in-out infinite;
+  }
+  @keyframes figureFloat {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-11px); }
+  }
+  @keyframes breathe {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.018); }
+  }
+
+  /* 粒子 */
+  .sparks {
+    position: absolute;
+    inset: 0;
+    z-index: 3;
+    pointer-events: none;
+  }
+  .sparks span {
+    position: absolute;
+    width: var(--s);
+    height: var(--s);
+    border-radius: 50%;
+    background: #fff;
+    box-shadow: 0 0 8px 1px rgba(200, 220, 255, 0.85);
+    opacity: 0;
+    animation: rise var(--t) ease-in-out infinite;
+    animation-delay: var(--d);
+  }
+  @keyframes rise {
+    0% { opacity: 0; transform: translateY(14px) scale(0.6); }
+    22% { opacity: 0.9; }
+    70% { opacity: 0.55; }
+    100% { opacity: 0; transform: translateY(-70px) scale(1); }
+  }
+
+  /* 扫描线 */
+  .scan {
+    position: absolute;
+    left: -4%;
+    right: -4%;
+    height: 1px;
+    z-index: 4;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba(110, 231, 249, 0.75),
+      rgba(183, 148, 255, 0.5),
+      transparent
+    );
+    box-shadow: 0 0 12px rgba(110, 231, 249, 0.5);
+    opacity: 0;
+    animation: sweep 8.5s ease-in-out infinite;
+    pointer-events: none;
+  }
+  @keyframes sweep {
+    0% { top: 16%; opacity: 0; }
+    12% { opacity: 0.55; }
+    55% { opacity: 0.32; }
+    72% { opacity: 0; }
+    100% { top: 92%; opacity: 0; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .halo, .ring-a, .ring-b, .figure-float, .scan { animation: none; }
+    .figure :global(.girl-img) { animation: none; }
+    .sparks { display: none; }
+  }
+</style>

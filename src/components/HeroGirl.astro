@@ -1,0 +1,150 @@
+---
+/**
+ * 主视觉少女 —— 首页 Hero 右侧
+ * 半睁眼、呆毛、长发垂落，被环形 HUD 环绕。纯 SVG。
+ */
+interface Props {
+  class?: string;
+}
+const { class: cls = '' } = Astro.props;
+const uid = 'hero' + Math.random().toString(36).slice(2, 7);
+---
+
+<svg class:list={['hero-girl', cls]} viewBox="0 0 360 480" fill="none" aria-hidden="true">
+  <defs>
+    <linearGradient id={`${uid}-hair`} x1="0.2" y1="0" x2="0.8" y2="1">
+      <stop offset="0" stop-color="#d3bbff" />
+      <stop offset="0.45" stop-color="#b794ff" />
+      <stop offset="1" stop-color="#ff9ad5" />
+    </linearGradient>
+    <linearGradient id={`${uid}-cloth`} x1="0.5" y1="0" x2="0.5" y2="1">
+      <stop offset="0" stop-color="#2e3554" />
+      <stop offset="1" stop-color="#191d33" />
+    </linearGradient>
+    <radialGradient id={`${uid}-halo`}>
+      <stop offset="0" stop-color="#b794ff" stop-opacity="0.24" />
+      <stop offset="0.62" stop-color="#b794ff" stop-opacity="0.06" />
+      <stop offset="1" stop-color="#b794ff" stop-opacity="0" />
+    </radialGradient>
+    <clipPath id={`${uid}-clip`}>
+      <rect x="0" y="0" width="360" height="480" />
+    </clipPath>
+  </defs>
+
+  <g clip-path={`url(#${uid}-clip)`}>
+    <!-- 光晕 -->
+    <circle cx="180" cy="190" r="178" fill={`url(#${uid}-halo)`} />
+
+    <!-- HUD 环 -->
+    <g class="hud" stroke="#6ee7f9" fill="none">
+      <circle cx="180" cy="190" r="152" stroke-width="0.8" stroke-dasharray="1.5 8" opacity="0.5" />
+      <circle cx="180" cy="190" r="134" stroke-width="0.6" opacity="0.13" />
+      <path d="M180 38a152 152 0 0 1 108 45" stroke-width="1.6" opacity="0.55" stroke-linecap="round" />
+      <path d="M180 342a152 152 0 0 1-108-45" stroke-width="1.6" opacity="0.3" stroke-linecap="round" />
+    </g>
+    <g class="hud-rev" stroke="#b794ff" fill="none">
+      <path d="M14 190a166 166 0 0 1 56-120" stroke-width="1" opacity="0.24" stroke-dasharray="4 13" />
+    </g>
+    <g stroke="#6ee7f9" opacity="0.26" stroke-width="0.8">
+      <path d="M180 12v12M180 354v12M8 190h12M340 190h12" />
+    </g>
+
+    <!-- 后发垂落（身体之后） -->
+    <path d="M116 156c-12 62-20 124-26 178 12 8 26 13 40 15 8-70 6-142-2-193z" fill={`url(#${uid}-hair)`} opacity="0.9" />
+    <path d="M244 156c12 62 20 124 26 178-12 8-26 13-40 15-8-70-6-142 2-193z" fill={`url(#${uid}-hair)`} opacity="0.9" />
+
+    <!-- 衣服 -->
+    <path
+      d="M180 248c-27 0-51 8-65 25-12 15-17 40-17 67v140h164V340c0-27-5-52-17-67-14-17-38-25-65-25z"
+      fill={`url(#${uid}-cloth)`}
+    />
+    <!-- 肩线 -->
+    <path d="M104 300c14-14 32-20 46-20M256 300c-14-14-32-20-46-20" stroke="#6ee7f9" stroke-width="1.1" opacity="0.28" fill="none" />
+    <!-- 衣领 -->
+    <path d="M160 268l20 32 20-32" stroke="#6ee7f9" stroke-width="1.5" opacity="0.5" fill="none" stroke-linejoin="round" />
+    <path d="M180 300v110" stroke="#6ee7f9" stroke-width="0.9" opacity="0.18" />
+
+    <!-- 脖子 -->
+    <path d="M166 224h28v26c0 8-6 13-14 13s-14-5-14-13z" fill="#f7ddd5" />
+    <path d="M166 240c8 6 20 6 28 0" stroke="#e8c4bb" stroke-width="1.2" opacity="0.5" fill="none" />
+
+    <!-- 头发主体 -->
+    <ellipse cx="180" cy="130" rx="72" ry="70" fill={`url(#${uid}-hair)`} opacity="0.96" />
+
+    <!-- 脸 -->
+    <path
+      d="M180 112c30 0 50 26 50 60 0 26-11 45-26 55-8 5-16 7-24 7s-16-2-24-7c-15-10-26-29-26-55 0-34 20-60 50-60z"
+      fill="#fdeee8"
+    />
+
+    <!-- 刘海 -->
+    <path
+      d="M130 168c-2-42 18-68 50-68s52 26 50 68c-5-22-13-35-24-39-4 13-12 20-22 20s-18-7-22-20c-11 4-19 17-24 39z"
+      fill={`url(#${uid}-hair)`}
+    />
+    <!-- 鬓发（压在脸两侧） -->
+    <path d="M132 156c-6 46-7 92-4 134 2 13 12 13 14 0 5-44 3-92-2-134z" fill="#b794ff" opacity="0.95" />
+    <path d="M228 156c6 46 7 92 4 134-2 13-12 13-14 0-5-44-3-92 2-134z" fill="#ff9ad5" opacity="0.9" />
+
+    <!-- 眉毛 -->
+    <path d="M148 172q12-5 23-2" stroke="#4a3f5e" stroke-width="2" stroke-linecap="round" opacity="0.5" />
+    <path d="M189 170q11-3 23 2" stroke="#4a3f5e" stroke-width="2" stroke-linecap="round" opacity="0.5" />
+
+    <!-- 半睁眼 -->
+    <path d="M150 188q13 10 26 1" stroke="#2a2140" stroke-width="3.4" stroke-linecap="round" fill="none" />
+    <path d="M184 189q13 9 26-1" stroke="#2a2140" stroke-width="3.4" stroke-linecap="round" fill="none" />
+    <path d="M153 190q10 12 19 0z" fill="#6ee7f9" opacity="0.6" />
+    <path d="M155 190q8 10 15 0z" fill="#2a2140" opacity="0.8" />
+    <path d="M188 190q10 12 19 0z" fill="#6ee7f9" opacity="0.6" />
+    <path d="M190 190q8 10 15 0z" fill="#2a2140" opacity="0.8" />
+    <circle cx="158" cy="192" r="2" fill="#ffffff" opacity="0.95" />
+    <circle cx="193" cy="192" r="2" fill="#ffffff" opacity="0.95" />
+    <!-- 睫毛 -->
+    <path d="M147 186l-5-6M212 185l5-6" stroke="#2a2140" stroke-width="1.8" stroke-linecap="round" opacity="0.75" />
+
+    <!-- 呆毛 -->
+    <path d="M188 66c-3-16 7-25 17-21-9 4-11 11-7 21z" fill="#d3bbff" />
+
+    <!-- 腮红 -->
+    <ellipse cx="143" cy="212" rx="10" ry="5.5" fill="#ff9ad5" opacity="0.3" />
+    <ellipse cx="217" cy="212" rx="10" ry="5.5" fill="#ff9ad5" opacity="0.3" />
+
+    <!-- 嘴 -->
+    <path d="M173 220q7 6 14 0" stroke="#2a2140" stroke-width="1.9" stroke-linecap="round" fill="none" opacity="0.65" />
+
+    <!-- 发饰 -->
+    <rect x="234" y="88" width="11" height="11" rx="2" fill="#6ee7f9" transform="rotate(20 239.5 93.5)" />
+    <rect x="118" y="106" width="7" height="7" rx="1.2" fill="#ff9ad5" transform="rotate(-16 121.5 109.5)" opacity="0.9" />
+
+    <!-- 数据线 -->
+    <g stroke="#6ee7f9" stroke-width="0.9" opacity="0.36" fill="none">
+      <path d="M98 344H64v30" />
+      <path d="M262 344h34v-26" />
+      <circle cx="64" cy="374" r="2.4" fill="#6ee7f9" opacity="0.9" />
+      <circle cx="296" cy="318" r="2.4" fill="#6ee7f9" opacity="0.9" />
+    </g>
+
+    <!-- 星点 -->
+    <g fill="#e8ebf7">
+      <path d="M304 92l2 5.4 5.4 2-5.4 2-2 5.4-2-5.4-5.4-2 5.4-2z" opacity="0.8" />
+      <path d="M56 152l1.4 3.8 3.8 1.4-3.8 1.4-1.4 3.8-1.4-3.8-3.8-1.4 3.8-1.4z" opacity="0.45" />
+      <path d="M286 300l1.2 3.2 3.2 1.2-3.2 1.2-1.2 3.2-1.2-3.2-3.2-1.2 3.2-1.2z" opacity="0.34" />
+    </g>
+  </g>
+</svg>
+
+<style>
+  .hero-girl {
+    width: 100%;
+    height: auto;
+    overflow: visible;
+  }
+  .hud {
+    transform-origin: 180px 190px;
+    animation: spinSlow 58s linear infinite;
+  }
+  .hud-rev {
+    transform-origin: 180px 190px;
+    animation: spinSlow 84s linear infinite reverse;
+  }
+</style>

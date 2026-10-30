@@ -1,0 +1,85 @@
+---
+import type { GetStaticPaths } from 'astro';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PageHeader from '../../components/PageHeader.astro';
+import PostCard from '../../components/PostCard.astro';
+import { getPosts, CATEGORIES, postUrl, wordCount } from '../../lib/posts';
+
+export const getStaticPaths: GetStaticPaths = async () => {
+  const posts = await getPosts();
+  return CATEGORIES.map((c) => ({
+    params: { slug: c.slug },
+    props: {
+      cat: c,
+      posts: posts.filter((p) => p.data.category === c.name),
+    },
+  }));
+};
+
+const { cat, posts } = Astro.props;
+---
+
+<BaseLayout title={cat.name} description={cat.desc}>
+  <PageHeader
+    kicker={`// CATEGORY · ${cat.code}`}
+    title={cat.name}
+    desc={cat.desc}
+    meta={`${posts.length} POSTS IN THIS CATEGORY`}
+    chibiTone={cat.tone}
+  />
+
+  <div class="shell body">
+    <nav class="siblings" aria-label="分类切换">
+      {CATEGORIES.map((c) => (
+        <a href={`/categories/${c.slug}`} class:list={['chip', { on: c.slug === cat.slug }]}>
+          {c.name}
+        </a>
+      ))}
+      <a href="/categories" class="chip back mono">← 全部分类</a>
+    </nav>
+
+    <div class="list">
+      {posts.length === 0 && (
+        <p class="empty mono">这个分类还是空的，等等看。</p>
+      )}
+      {posts.map((p, i) => (
+        <PostCard
+          href={postUrl(p)}
+          title={p.data.title}
+          description={p.data.description}
+          date={p.data.pubDate}
+          category={p.data.category}
+          tags={p.data.tags}
+          index={String(i + 1).padStart(2, '0')}
+          words={wordCount(p.body)}
+        />
+      ))}
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  .body { padding-top: 30px; }
+  .siblings {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
+    padding-bottom: 26px;
+    margin-bottom: 26px;
+    border-bottom: 1px solid var(--line-soft);
+  }
+  .siblings .on {
+    color: var(--accent);
+    border-color: var(--accent);
+    background: var(--accent-soft);
+  }
+  .back { margin-left: auto; font-size: 11px; }
+  .list { display: flex; flex-direction: column; gap: 14px; }
+  .empty {
+    font-size: 12px;
+    color: var(--text-3);
+    padding: 40px 0;
+    text-align: center;
+  }
+</style>

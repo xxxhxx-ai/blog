@@ -1,0 +1,189 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHeader from '../components/PageHeader.astro';
+import ChibiArt from '../components/ChibiArt.astro';
+import { MY_SITES } from '../data/site';
+---
+
+<BaseLayout title="我的站点" description="lxxxhxx 在各处的落脚点。">
+  <PageHeader
+    kicker="// ELSEWHERE"
+    title="我的站点"
+    desc="这个博客是我自己盖的房子，其余这些是租来的房间。都放这儿，方便你自己串门。"
+    meta={`${MY_SITES.length} CHANNELS`}
+    chibiTone={2}
+  />
+
+  <div class="shell body">
+    <div class="grid">
+      {MY_SITES.map((s, i) => (
+        <a
+          href={s.url}
+          class="site panel corners reveal"
+          target={s.url.startsWith('http') ? '_blank' : undefined}
+          rel="noopener noreferrer"
+        >
+          <div class="s-top">
+            <span class="s-code mono">{s.code}</span>
+            <span class="s-tag mono">{s.tag}</span>
+          </div>
+          <h2>{s.name}</h2>
+          <p>{s.desc}</p>
+          <span class="s-arrow" aria-hidden="true">↗</span>
+          <span class="s-no mono">0{i + 1}</span>
+        </a>
+      ))}
+    </div>
+
+    <div class="quote panel reveal">
+      <div class="q-art">
+        <ChibiArt size={126} tone={0} />
+      </div>
+      <div class="q-text">
+        <p>
+          「分散在各平台的碎片，最后还是要有个自己的地方收着。」
+        </p>
+        <p class="q-sub mono">
+          其它平台随时可能改规则，这个站点不会。
+        </p>
+      </div>
+    </div>
+
+    <div class="edit-tip panel reveal">
+      <p class="mono k">// 怎么改这里</p>
+      <p>
+        这些都是 <code>src/data/site.ts</code> 里 <code>MY_SITES</code> 数组的内容，
+        换名字、换链接、加减条目都可以，改完重新构建就生效。
+      </p>
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  .body { padding-top: 34px; }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 14px;
+  }
+
+  .site {
+    display: block;
+    padding: 22px 20px 20px;
+    position: relative;
+    min-height: 178px;
+    overflow: hidden;
+    isolation: isolate;
+  }
+  .site:hover { transform: translateY(-4px); }
+
+  .s-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 18px;
+  }
+  .s-code {
+    font-size: 10px;
+    letter-spacing: 0.14em;
+    color: var(--accent-2);
+    opacity: 0.85;
+  }
+  .s-tag {
+    font-size: 9px;
+    letter-spacing: 0.1em;
+    color: var(--text-3);
+    border: 1px solid var(--line);
+    border-radius: 20px;
+    padding: 2px 8px;
+  }
+  .site h2 {
+    font-size: 18.5px;
+    margin-bottom: 8px;
+    transition: color 0.24s ease;
+  }
+  .site:hover h2 { color: var(--accent); }
+  .site p {
+    font-size: 12.8px;
+    color: var(--text-3);
+    line-height: 1.72;
+    max-width: 88%;
+  }
+
+  .s-arrow {
+    position: absolute;
+    right: 20px;
+    bottom: 18px;
+    font-size: 15px;
+    color: var(--accent-2);
+    opacity: 0;
+    transform: translate(-4px, 4px);
+    transition: all 0.3s ease;
+  }
+  .site:hover .s-arrow {
+    opacity: 1;
+    transform: none;
+  }
+  .s-no {
+    position: absolute;
+    left: 20px;
+    bottom: 14px;
+    font-size: 26px;
+    color: var(--text-3);
+    opacity: 0.1;
+    letter-spacing: -0.02em;
+  }
+
+  .quote {
+    margin-top: 22px;
+    padding: 26px 30px;
+    display: flex;
+    align-items: center;
+    gap: 24px;
+  }
+  .q-art { flex-shrink: 0; opacity: 0.9; }
+  .q-text p {
+    font-family: var(--font-serif);
+    font-size: 17.5px;
+    line-height: 1.9;
+    color: var(--text);
+    margin-bottom: 8px;
+  }
+  .q-sub {
+    font-size: 10.5px !important;
+    letter-spacing: 0.1em;
+    color: var(--text-3) !important;
+    font-family: var(--font-mono) !important;
+  }
+
+  .edit-tip { margin-top: 14px; padding: 20px 24px; }
+  .edit-tip .k {
+    font-size: 10px;
+    letter-spacing: 0.16em;
+    color: var(--accent-2);
+    margin-bottom: 8px;
+  }
+  .edit-tip p {
+    font-size: 13px;
+    color: var(--text-2);
+    line-height: 1.8;
+  }
+  .edit-tip code {
+    font-family: var(--font-mono);
+    font-size: 11.6px;
+    padding: 1px 6px;
+    border-radius: 5px;
+    background: var(--accent-soft);
+    border: 1px solid var(--line);
+    color: var(--accent-2);
+  }
+
+  @media (max-width: 900px) {
+    .grid { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (max-width: 560px) {
+    .grid { grid-template-columns: 1fr; }
+    .quote { flex-direction: column; text-align: center; gap: 12px; }
+  }
+</style>

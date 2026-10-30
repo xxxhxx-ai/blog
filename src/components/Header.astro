@@ -1,0 +1,343 @@
+---
+const path = Astro.url.pathname.replace(/\/$/, '') || '/';
+
+const primary = [
+  { href: '/', label: '首页', code: '00' },
+  { href: '/posts', label: '文章', code: '01' },
+  { href: '/categories', label: '分类', code: '02' },
+  { href: '/works', label: '作品', code: '03' },
+];
+
+const more = [
+  { href: '/archive', label: '归档', code: 'A1' },
+  { href: '/sites', label: '我的站点', code: 'A2' },
+  { href: '/links', label: '友链', code: 'A3' },
+  { href: '/guestbook', label: '留言板', code: 'A4' },
+  { href: '/resume', label: '简历', code: 'A5' },
+  { href: '/about', label: '关于', code: 'A6' },
+];
+
+const isActive = (href: string) =>
+  href === '/' ? path === '/' : path === href || path.startsWith(href + '/');
+---
+
+<header class="site-head">
+  <div class="shell bar">
+    <a href="/" class="brand" aria-label="lxxxhxx 首页">
+      <span class="mark" aria-hidden="true"></span>
+      <span class="name">l<span class="hl">xxx</span>hxx</span>
+    </a>
+
+    <nav class="nav" aria-label="主导航">
+      {primary.map((i) => (
+        <a href={i.href} class:list={['nav-link', { on: isActive(i.href) }]}>
+          <span class="code">{i.code}</span>{i.label}
+        </a>
+      ))}
+
+      <details class="more">
+        <summary class="nav-link">
+          <span class="code">MORE</span>更多
+          <svg width="9" height="9" viewBox="0 0 10 10" fill="none" aria-hidden="true">
+            <path d="M1 3.2 5 7.2 9 3.2" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" />
+          </svg>
+        </summary>
+        <div class="menu panel">
+          {more.map((i) => (
+            <a href={i.href} class:list={['menu-item', { on: isActive(i.href) }]}>
+              <span class="code">{i.code}</span>{i.label}
+            </a>
+          ))}
+        </div>
+      </details>
+    </nav>
+
+    <div class="tools">
+      <a href="/rss.xml" class="tool" aria-label="RSS 订阅" title="RSS">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M4 11a9 9 0 0 1 9 9M4 4a16 16 0 0 1 16 16" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" />
+          <circle cx="5" cy="19" r="1.9" fill="currentColor" />
+        </svg>
+      </a>
+      <button id="theme-toggle" class="tool" type="button" aria-label="切换深浅色主题" title="切换主题">
+        <svg class="ic-moon" width="15" height="15" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M21 13.2A9 9 0 1 1 10.8 3a7.2 7.2 0 0 0 10.2 10.2Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" />
+        </svg>
+        <svg class="ic-sun" width="15" height="15" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <circle cx="12" cy="12" r="4.2" stroke="currentColor" stroke-width="1.8" />
+          <path d="M12 2v2.4M12 19.6V22M2 12h2.4M19.6 12H22M4.9 4.9l1.7 1.7M17.4 17.4l1.7 1.7M19.1 4.9l-1.7 1.7M6.6 17.4l-1.7 1.7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+        </svg>
+      </button>
+      <button id="nav-toggle" class="tool only-m" type="button" aria-label="打开菜单" aria-expanded="false">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- 移动端抽屉 -->
+  <div class="drawer" id="drawer" hidden>
+    <div class="drawer-grid">
+      {[...primary, ...more].map((i) => (
+        <a href={i.href} class:list={['drawer-link', { on: isActive(i.href) }]}>
+          <span class="code">{i.code}</span>{i.label}
+        </a>
+      ))}
+    </div>
+  </div>
+</header>
+
+<script>
+  const w = window as any;
+
+  function setupHeader() {
+    const root = document.documentElement;
+
+    // 主题切换（按钮每次导航都是新元素，重新绑定即可）
+    const btn = document.getElementById('theme-toggle');
+    btn?.addEventListener('click', () => {
+      const next = root.dataset.theme === 'dark' ? 'light' : 'dark';
+      root.dataset.theme = next;
+      try {
+        localStorage.setItem('theme', next);
+      } catch (e) {}
+      document
+        .querySelector('meta[name="theme-color"]')
+        ?.setAttribute('content', next === 'dark' ? '#07080d' : '#f7f5f1');
+    });
+
+    // 移动端菜单
+    const navBtn = document.getElementById('nav-toggle');
+    const drawer = document.getElementById('drawer');
+    navBtn?.addEventListener('click', () => {
+      const open = drawer?.hasAttribute('hidden');
+      if (open) drawer?.removeAttribute('hidden');
+      else drawer?.setAttribute('hidden', '');
+      navBtn.setAttribute('aria-expanded', String(!!open));
+    });
+
+    // 打开状态下点击下拉外部则关闭
+    document.querySelectorAll('details.more').forEach((d) => {
+      d.addEventListener('click', (e) => {
+        const t = e.target as HTMLElement;
+        if (!t.closest('.menu')) d.removeAttribute('open');
+      });
+    });
+  }
+
+  // 只在首次执行时挂全局监听，避免翻页后重复累积
+  if (!w.__headerBound) {
+    w.__headerBound = true;
+
+    const head = () => document.querySelector('.site-head');
+    const onScroll = () => head()?.classList.toggle('stuck', window.scrollY > 12);
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+
+    document.addEventListener('click', (e) => {
+      document.querySelectorAll('details.more[open]').forEach((d) => {
+        if (!d.contains(e.target as Node)) d.removeAttribute('open');
+      });
+    });
+
+    window.addEventListener('astro:page-load', onScroll);
+  }
+
+  setupHeader();
+  document.addEventListener('astro:page-load', setupHeader);
+</script>
+
+<style>
+  .site-head {
+    position: sticky;
+    top: 0;
+    z-index: 90;
+    border-bottom: 1px solid transparent;
+    transition: background-color 0.3s ease, border-color 0.3s ease, backdrop-filter 0.3s ease;
+  }
+  .site-head.stuck {
+    background: color-mix(in srgb, var(--bg) 78%, transparent);
+    border-bottom-color: var(--line);
+    backdrop-filter: blur(16px) saturate(1.2);
+    -webkit-backdrop-filter: blur(16px) saturate(1.2);
+  }
+
+  .bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    height: 68px;
+  }
+
+  /* 品牌 */
+  .brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    flex-shrink: 0;
+  }
+  .mark {
+    width: 9px;
+    height: 9px;
+    border: 1px solid var(--accent-2);
+    transform: rotate(45deg);
+    position: relative;
+    transition: all 0.4s ease;
+  }
+  .brand:hover .mark {
+    background: var(--accent-2);
+    box-shadow: 0 0 14px var(--accent-2);
+    transform: rotate(135deg);
+  }
+  .name {
+    font-family: var(--font-mono);
+    font-size: 15px;
+    letter-spacing: 0.1em;
+    font-weight: 500;
+  }
+  .hl {
+    color: var(--accent);
+    text-shadow: 0 0 16px var(--accent-soft);
+  }
+
+  /* 导航 */
+  .nav {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+  }
+  .nav-link {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 7px;
+    padding: 7px 12px;
+    font-size: 13.5px;
+    color: var(--text-2);
+    border-radius: 8px;
+    position: relative;
+    transition: color 0.24s ease, background-color 0.24s ease;
+    list-style: none;
+    cursor: pointer;
+  }
+  .nav-link::-webkit-details-marker { display: none; }
+  .nav-link:hover {
+    color: var(--text);
+    background: var(--accent-soft);
+  }
+  .nav-link.on {
+    color: var(--accent);
+  }
+  .nav-link.on::after {
+    content: "";
+    position: absolute;
+    left: 12px;
+    right: 12px;
+    bottom: 1px;
+    height: 1px;
+    background: var(--accent);
+    box-shadow: 0 0 10px var(--accent);
+  }
+  .code {
+    font-family: var(--font-mono);
+    font-size: 9.5px;
+    letter-spacing: 0.08em;
+    color: var(--text-3);
+    opacity: 0.75;
+  }
+
+  /* 下拉 */
+  .more { position: relative; }
+  .more summary svg { transition: transform 0.25s ease; margin-left: 2px; }
+  .more[open] summary svg { transform: rotate(180deg); }
+  .menu {
+    position: absolute;
+    top: calc(100% + 10px);
+    right: 0;
+    min-width: 168px;
+    padding: 7px;
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    box-shadow: var(--shadow);
+    background: var(--panel-solid);
+  }
+  .menu-item {
+    display: flex;
+    align-items: baseline;
+    gap: 9px;
+    padding: 8px 12px;
+    font-size: 13.5px;
+    color: var(--text-2);
+    border-radius: 7px;
+    transition: all 0.2s ease;
+  }
+  .menu-item:hover {
+    background: var(--accent-soft);
+    color: var(--accent);
+  }
+  .menu-item.on { color: var(--accent); }
+
+  /* 工具区 */
+  .tools {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    flex-shrink: 0;
+  }
+  .tool {
+    width: 34px;
+    height: 34px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid transparent;
+    border-radius: 9px;
+    color: var(--text-3);
+    transition: all 0.24s ease;
+  }
+  .tool:hover {
+    color: var(--accent);
+    border-color: var(--line);
+    background: var(--accent-soft);
+  }
+  :global(:root[data-theme="dark"]) .ic-sun { display: none; }
+  :global(:root[data-theme="light"]) .ic-moon { display: none; }
+
+  /* 移动抽屉 */
+  .only-m { display: none; }
+  .drawer {
+    border-top: 1px solid var(--line);
+    background: var(--panel-solid);
+    padding: 14px 0 20px;
+  }
+  .drawer-grid {
+    max-width: 1120px;
+    margin: 0 auto;
+    padding: 0 26px;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 4px;
+  }
+  .drawer-link {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    padding: 12px 14px;
+    border: 1px solid var(--line-soft);
+    border-radius: 10px;
+    font-size: 14px;
+    color: var(--text-2);
+  }
+  .drawer-link.on {
+    color: var(--accent);
+    border-color: var(--line-strong);
+  }
+
+  @media (max-width: 880px) {
+    .nav { display: none; }
+    .only-m { display: inline-flex; }
+    .bar { height: 62px; }
+  }
+</style>

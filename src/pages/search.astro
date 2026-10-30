@@ -1,0 +1,276 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHeader from '../components/PageHeader.astro';
+import ChibiArt from '../components/ChibiArt.astro';
+---
+
+<BaseLayout title="搜索" description="在站内搜索文章。">
+  <PageHeader
+    kicker="// SEARCH"
+    title="搜索"
+    desc="输入关键词，标题、摘要、正文和标签都会被检索。"
+    meta="CLIENT-SIDE · 无请求到服务器"
+    chibiTone={0}
+  />
+
+  <div class="shell body">
+    <div class="box">
+      <div class="input-wrap">
+        <svg class="ic" width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="1.8" />
+          <path d="m16.5 16.5 4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+        </svg>
+        <input
+          id="q"
+          type="search"
+          placeholder="试试：主题、CSS、小程序、排版…"
+          autocomplete="off"
+          spellcheck="false"
+          aria-label="搜索关键词"
+        />
+        <kbd class="mono">ESC</kbd>
+      </div>
+      <p class="status mono" id="status">等待输入</p>
+    </div>
+
+    <div id="results" class="results"></div>
+
+    <div id="empty" class="empty" hidden>
+      <ChibiArt size={140} tone={2} />
+      <p class="e-title">没有找到相关内容</p>
+      <p class="e-sub mono">换个词试试，或者去 <a href="/archive">归档</a> 里翻</p>
+    </div>
+  </div>
+</BaseLayout>
+
+<script>
+  type Item = {
+    url: string; title: string; desc: string; category: string;
+    tags: string[]; date: string; words: number; text: string;
+  };
+
+  let data: Item[] = [];
+  let loaded = false;
+
+  function esc(s: string) {
+    return s.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]!);
+  }
+
+  function mark(text: string, q: string) {
+    if (!q) return esc(text);
+    const safe = q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    return esc(text).replace(new RegExp('(' + safe + ')', 'gi'), '<mark>$1</mark>');
+  }
+
+  async function loadIndex(input: HTMLInputElement, statusEl: HTMLElement, results: HTMLElement, empty: HTMLElement) {
+    if (loaded) return;
+    loaded = true;
+    statusEl.textContent = '正在载入索引…';
+    try {
+      const res = await fetch('/search-index.json');
+      data = await res.json();
+      statusEl.textContent = '索引就绪 · ' + data.length + ' 篇';
+    } catch {
+      statusEl.textContent = '索引载入失败';
+    }
+    run(input, statusEl, results, empty);
+  }
+
+  function run(input: HTMLInputElement, statusEl: HTMLElement, results: HTMLElement, empty: HTMLElement) {
+    const q = input.value.trim();
+    if (!q) {
+      results.innerHTML = '';
+      empty.hidden = true;
+      statusEl.textContent = '索引就绪 · ' + data.length + ' 篇';
+      return;
+    }
+    const kw = q.toLowerCase();
+    const hits = data
+      .map((it) => {
+        let score = 0;
+        if (it.title.toLowerCase().includes(kw)) score += 12;
+        if (it.desc.toLowerCase().includes(kw)) score += 5;
+        if (it.tags.some((t) => t.toLowerCase().includes(kw))) score += 6;
+        if (it.category.toLowerCase().includes(kw)) score += 4;
+        const bodyHits = it.text.toLowerCase().split(kw).length - 1;
+        score += Math.min(bodyHits, 8);
+        return { it, score, bodyHits };
+      })
+      .filter((x) => x.score > 0)
+      .sort((a, b) => b.score - a.score);
+
+    statusEl.textContent = '找到 ' + hits.length + ' 条结果';
+
+    if (!hits.length) {
+      results.innerHTML = '';
+      empty.hidden = false;
+      return;
+    }
+    empty.hidden = true;
+    results.innerHTML = hits
+      .map(({ it, bodyHits }) => {
+        const meta = bodyHits ? '<span class="d"></span><span class="r-n">正文命中 ' + bodyHits + ' 次</span>' : '';
+        return '<a class="r-item" href="' + it.url + '">' +
+          '<div class="r-meta mono"><span class="r-cat">' + esc(it.category) + '</span>' +
+          '<span class="d"></span><span>' + it.date.replace(/-/g, '.') + '</span>' + meta + '</div>' +
+          '<h3>' + mark(it.title, q) + '</h3>' +
+          '<p>' + mark(it.desc, q) + '</p></a>';
+      })
+      .join('');
+  }
+
+  function setupSearch() {
+    const input = document.getElementById('q') as HTMLInputElement | null;
+    if (!input || input.dataset.init === '1') return;
+    input.dataset.init = '1';
+
+    const results = document.getElementById('results') as HTMLElement;
+    const statusEl = document.getElementById('status') as HTMLElement;
+    const empty = document.getElementById('empty') as HTMLElement;
+
+    input.addEventListener('focus', () => loadIndex(input, statusEl, results, empty));
+    input.addEventListener('input', () => {
+      if (!loaded) { loadIndex(input, statusEl, results, empty); return; }
+      run(input, statusEl, results, empty);
+    });
+  }
+
+  if (!(window as any).__searchKeys) {
+    (window as any).__searchKeys = true;
+    document.addEventListener('keydown', (e) => {
+      const input = document.getElementById('q') as HTMLInputElement | null;
+      if (!input) return;
+      if (e.key === '/') {
+        e.preventDefault();
+        input.focus();
+      }
+      if (e.key === 'Escape') {
+        input.value = '';
+        input.blur();
+        input.dispatchEvent(new Event('input'));
+      }
+    });
+  }
+
+  setupSearch();
+  document.addEventListener('astro:page-load', setupSearch);
+</script>
+
+<style>
+  .body { padding-top: 34px; min-height: 50vh; }
+
+  .box { margin-bottom: 30px; }
+  .input-wrap {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 6px 18px;
+    border: 1px solid var(--line-strong);
+    border-radius: 14px;
+    background: var(--panel);
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  }
+  .input-wrap:focus-within {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-soft);
+  }
+  .ic { color: var(--text-3); flex-shrink: 0; }
+  input[type='search'] {
+    flex: 1;
+    background: none;
+    border: none;
+    outline: none;
+    color: var(--text);
+    font-size: 16px;
+    font-family: var(--font-sans);
+    padding: 16px 0;
+    min-width: 0;
+  }
+  input[type='search']::placeholder { color: var(--text-3); }
+  input[type='search']::-webkit-search-cancel-button { display: none; }
+  kbd {
+    font-size: 9px;
+    padding: 3px 7px;
+    border: 1px solid var(--line);
+    border-radius: 5px;
+    color: var(--text-3);
+    flex-shrink: 0;
+  }
+  .status {
+    margin-top: 10px;
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    color: var(--text-3);
+  }
+
+  .results { display: flex; flex-direction: column; gap: 10px; }
+
+  :global(.r-item) {
+    display: block;
+    padding: 20px 22px;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    background: var(--panel);
+    transition: all 0.26s ease;
+  }
+  :global(.r-item:hover) {
+    border-color: var(--accent);
+    transform: translateX(3px);
+    background: linear-gradient(90deg, var(--accent-soft), transparent 60%), var(--panel);
+  }
+  :global(.r-meta) {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 9.5px;
+    letter-spacing: 0.1em;
+    color: var(--text-3);
+    margin-bottom: 9px;
+  }
+  :global(.r-cat) { color: var(--accent-2); }
+  :global(.r-meta .d) {
+    width: 3px;
+    height: 3px;
+    border-radius: 50%;
+    background: var(--text-3);
+    opacity: 0.5;
+  }
+  :global(.r-n) { opacity: 0.75; }
+  :global(.r-item h3) {
+    font-size: 17px;
+    margin-bottom: 6px;
+    transition: color 0.2s ease;
+  }
+  :global(.r-item:hover h3) { color: var(--accent); }
+  :global(.r-item p) {
+    font-size: 13.2px;
+    color: var(--text-2);
+    line-height: 1.75;
+  }
+  :global(mark) {
+    background: var(--accent-soft);
+    color: var(--accent);
+    padding: 0 3px;
+    border-radius: 3px;
+  }
+
+  .empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    padding: 40px 0 20px;
+  }
+  .e-title {
+    font-family: var(--font-serif);
+    font-size: 18px;
+    color: var(--text-2);
+    margin-top: 6px;
+  }
+  .e-sub {
+    font-size: 10.5px;
+    letter-spacing: 0.1em;
+    color: var(--text-3);
+  }
+  .e-sub a { color: var(--accent-2); text-decoration: underline; }
+</style>

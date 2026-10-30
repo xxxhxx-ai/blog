@@ -1,0 +1,66 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PageHeader from '../../components/PageHeader.astro';
+import { getPosts, tagList } from '../../lib/posts';
+
+const posts = await getPosts();
+const tags = tagList(posts);
+const max = Math.max(...tags.map((t) => t[1]), 1);
+---
+
+<BaseLayout title="标签" description="所有标签，按使用次数排列。">
+  <PageHeader
+    kicker="// TAGS"
+    title="标签"
+    desc="比分类更碎、更交叉的一层。字数越大表示写得越多。"
+    meta={`${tags.length} TAGS`}
+  />
+
+  <div class="shell body">
+    <div class="cloud">
+      {tags.map(([t, n]) => (
+        <a
+          href={`/tags/${encodeURIComponent(t)}`}
+          class="t"
+          style={`--w:${(0.92 + (n / max) * 0.62).toFixed(2)}`}
+        >
+          <span class="t-name">{t}</span>
+          <span class="t-n mono">{String(n).padStart(2, '0')}</span>
+        </a>
+      ))}
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  .body { padding-top: 34px; }
+  .cloud {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .t {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 9px;
+    padding: 9px 17px;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    background: var(--panel);
+    transition: all 0.26s ease;
+  }
+  .t-name {
+    font-size: calc(13.5px * var(--w));
+    color: var(--text);
+  }
+  .t-n {
+    font-size: 9.5px;
+    color: var(--text-3);
+  }
+  .t:hover {
+    border-color: var(--accent);
+    background: var(--accent-soft);
+    transform: translateY(-2px);
+  }
+  .t:hover .t-name { color: var(--accent); }
+</style>

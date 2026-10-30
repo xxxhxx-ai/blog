@@ -1,0 +1,129 @@
+---
+/**
+ * 打字机文字
+ * - headline 模式：逐字打出一次，结束后光标保留闪烁
+ * - loop 模式：打完 → 停 → 删除 → 换下一句，循环
+ */
+interface Props {
+  text?: string;
+  phrases?: string[];
+  mode?: 'headline' | 'loop';
+  speed?: number;
+  class?: string;
+}
+
+const { text = '', phrases = [], mode = 'headline', speed = 110, class: cls = '' } = Astro.props;
+const id = 'tw' + Math.random().toString(36).slice(2, 8);
+---
+
+<span
+  class:list={['tw', cls]}
+  id={id}
+  data-mode={mode}
+  data-speed={speed}
+  data-text={text}
+  data-phrases={JSON.stringify(phrases)}
+>
+  <span class="txt" aria-hidden="true"></span>
+  <span class="caret" aria-hidden="true"></span>
+  <span class="sr">{mode === 'headline' ? text : phrases[0] ?? ''}</span>
+</span>
+
+<style>
+  .tw {
+    display: inline-flex;
+    align-items: baseline;
+    flex-wrap: wrap;
+  }
+  .txt {
+    white-space: pre-wrap;
+  }
+  .caret {
+    display: inline-block;
+    width: 0.52em;
+    height: 0.92em;
+    margin-left: 0.12em;
+    background: currentColor;
+    transform: translateY(0.06em);
+    animation: caretBlink 1.1s step-end infinite;
+    opacity: 0.85;
+    box-shadow: 0 0 12px currentColor;
+  }
+  .sr {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+  }
+</style>
+
+<script>
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const wait = (ms: number) => new Promise((r) => setTimeout(r, ms));
+
+  function setupTypewriters() {
+    document.querySelectorAll<HTMLElement>('.tw').forEach((root) => {
+      // 同一元素只初始化一次（视图过渡可能触发多次）
+      if (root.dataset.twInit === '1') return;
+      root.dataset.twInit = '1';
+
+      const out = root.querySelector('.txt') as HTMLElement;
+      const mode = root.dataset.mode || 'headline';
+      const speed = Number(root.dataset.speed || 110);
+      const phrases: string[] = JSON.parse(root.dataset.phrases || '[]');
+      const single = root.dataset.text || '';
+
+      if (reduce) {
+        out.textContent = mode === 'headline' ? single : phrases[0] || '';
+        return;
+      }
+
+      let i = 0;
+      let pi = 0;
+      let deleting = false;
+
+      async function typeOne(str: string) {
+        out.textContent = '';
+        for (i = 0; i < str.length; i++) {
+          if (!root.isConnected) return;
+          out.textContent += str[i];
+          await wait(speed + Math.random() * 55);
+        }
+      }
+
+      async function typeOnce() {
+        await wait(320);
+        if (!root.isConnected) return;
+        await typeOne(single);
+      }
+
+      async function loop() {
+        while (root.isConnected) {
+          const cur = phrases[pi % phrases.length] || '';
+          if (!deleting) {
+            await typeOne(cur);
+            await wait(1900);
+            deleting = true;
+          } else {
+            for (let k = cur.length; k >= 0; k--) {
+              if (!root.isConnected) return;
+              out.textContent = cur.slice(0, k);
+              await wait(38);
+            }
+            deleting = false;
+            pi++;
+            await wait(280);
+          }
+        }
+      }
+
+      if (mode === 'headline') typeOnce();
+      else if (phrases.length) loop();
+    });
+  }
+
+  setupTypewriters();
+  document.addEventListener('astro:page-load', setupTypewriters);
+</script>

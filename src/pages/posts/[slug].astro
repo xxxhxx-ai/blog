@@ -1,0 +1,272 @@
+---
+import type { GetStaticPaths } from 'astro';
+import { render } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Giscus from '../../components/Giscus.astro';
+import {
+  getPosts,
+  postUrl,
+  readingMinutes,
+  fmtDate,
+  isoDate,
+  categorySlug,
+  tagUrl,
+} from '../../lib/posts';
+
+export const getStaticPaths: GetStaticPaths = async () => {
+  const posts = await getPosts();
+  return posts.map((post, i) => ({
+    params: { slug: post.id.replace(/\.md$/, '') },
+    props: {
+      post,
+      prev: posts[i + 1] ?? null,
+      next: posts[i - 1] ?? null,
+    },
+  }));
+};
+
+const { post, prev, next } = Astro.props;
+const { Content, headings } = await render(post);
+const minutes = readingMinutes(post.body);
+const toc = headings.filter((h) => h.depth === 2 || h.depth === 3);
+---
+
+<BaseLayout title={post.data.title} description={post.data.description}>
+  <div class="shell wrap">
+    <article class="article">
+      <nav class="crumbs mono" aria-label="面包屑">
+        <a href="/">首页</a>
+        <span>/</span>
+        <a href="/posts">文章</a>
+        <span>/</span>
+        <a href={`/categories/${categorySlug(post.data.category)}`}>{post.data.category}</a>
+      </nav>
+
+      <header class="a-head">
+        <h1>{post.data.title}</h1>
+        <p class="lede">{post.data.description}</p>
+
+        <div class="a-meta mono">
+          <time datetime={isoDate(post.data.pubDate)}>{fmtDate(post.data.pubDate)}</time>
+          <span class="dot" aria-hidden="true"></span>
+          <span class="cat">{post.data.category}</span>
+          <span class="dot" aria-hidden="true"></span>
+          <span>{minutes} MIN READ</span>
+          {post.data.updatedDate && (
+            <>
+              <span class="dot" aria-hidden="true"></span>
+              <span class="upd">更新于 {fmtDate(post.data.updatedDate)}</span>
+            </>
+          )}
+        </div>
+
+        {post.data.tags.length > 0 && (
+          <div class="a-tags">
+            {post.data.tags.map((t) => (
+              <a href={tagUrl(t)} class="chip">{t}</a>
+            ))}
+          </div>
+        )}
+      </header>
+
+      <div class="rule" aria-hidden="true"></div>
+
+      <div class="prose">
+        <Content />
+      </div>
+
+      <div class="end-mark mono" aria-hidden="true">
+        <span></span>EOF
+      </div>
+
+      <nav class="pn" aria-label="上下篇">
+        {prev ? (
+          <a href={postUrl(prev)} class="pn-item panel">
+            <span class="pn-label mono">← 上一篇</span>
+            <span class="pn-title">{prev.data.title}</span>
+          </a>
+        ) : (
+          <div class="pn-item empty">
+            <span class="pn-label mono">← 上一篇</span>
+            <span class="pn-title">已经是第一篇了</span>
+          </div>
+        )}
+        {next ? (
+          <a href={postUrl(next)} class="pn-item panel next">
+            <span class="pn-label mono">下一篇 →</span>
+            <span class="pn-title">{next.data.title}</span>
+          </a>
+        ) : (
+          <div class="pn-item empty next">
+            <span class="pn-label mono">下一篇 →</span>
+            <span class="pn-title">还没写</span>
+          </div>
+        )}
+      </nav>
+
+      <Giscus mode="post" />
+    </article>
+
+    {toc.length > 2 && (
+      <aside class="toc-col">
+        <div class="toc">
+          <p class="toc-title mono">// ON THIS PAGE</p>
+          <ul>
+            {toc.map((h) => (
+              <li class:list={[`d${h.depth}`]}>
+                <a href={`#${h.slug}`}>{h.text}</a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </aside>
+    )}
+  </div>
+</BaseLayout>
+
+<style>
+  .wrap {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 208px;
+    gap: 54px;
+    padding-top: 40px;
+  }
+  .article { min-width: 0; max-width: 720px; }
+
+  .crumbs {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 10.5px;
+    letter-spacing: 0.08em;
+    color: var(--text-3);
+    margin-bottom: 26px;
+  }
+  .crumbs a { transition: color 0.2s ease; }
+  .crumbs a:hover { color: var(--accent); }
+
+  .a-head h1 {
+    font-size: clamp(27px, 3.8vw, 38px);
+    line-height: 1.34;
+    margin-bottom: 16px;
+  }
+  .lede {
+    font-size: 15.2px;
+    color: var(--text-2);
+    line-height: 1.86;
+    margin-bottom: 22px;
+  }
+  .a-meta {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    font-size: 10.5px;
+    letter-spacing: 0.1em;
+    color: var(--text-3);
+    margin-bottom: 16px;
+  }
+  .a-meta .cat { color: var(--accent-2); }
+  .a-meta .upd { opacity: 0.75; }
+  .dot {
+    width: 3px;
+    height: 3px;
+    border-radius: 50%;
+    background: var(--text-3);
+    opacity: 0.5;
+  }
+  .a-tags { display: flex; gap: 7px; flex-wrap: wrap; }
+
+  .rule {
+    height: 1px;
+    background: linear-gradient(90deg, var(--line-strong), transparent);
+    margin: 30px 0 34px;
+  }
+
+  .end-mark {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    justify-content: center;
+    margin: 52px 0 0;
+    font-size: 10px;
+    letter-spacing: 0.24em;
+    color: var(--text-3);
+    opacity: 0.7;
+  }
+  .end-mark span {
+    width: 26px;
+    height: 1px;
+    background: var(--line-strong);
+  }
+
+  .pn {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-top: 44px;
+  }
+  .pn-item {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+    padding: 16px 18px;
+    border-radius: 12px;
+    transition: all 0.28s ease;
+  }
+  .pn-item.panel:hover { border-color: var(--accent); transform: translateY(-2px); }
+  .pn-item.next { text-align: right; align-items: flex-end; }
+  .pn-item.empty { opacity: 0.42; }
+  .pn-label {
+    font-size: 9.5px;
+    letter-spacing: 0.14em;
+    color: var(--text-3);
+  }
+  .pn-title {
+    font-size: 13.8px;
+    color: var(--text);
+    line-height: 1.55;
+  }
+  .pn-item.panel:hover .pn-title { color: var(--accent); }
+
+  /* TOC */
+  .toc-col { position: relative; }
+  .toc {
+    position: sticky;
+    top: 96px;
+    padding-left: 18px;
+    border-left: 1px solid var(--line);
+  }
+  .toc-title {
+    font-size: 9.5px;
+    letter-spacing: 0.18em;
+    color: var(--text-3);
+    margin-bottom: 14px;
+  }
+  .toc ul { list-style: none; display: flex; flex-direction: column; gap: 9px; }
+  .toc li a {
+    display: block;
+    font-size: 12.3px;
+    line-height: 1.62;
+    color: var(--text-3);
+    transition: color 0.2s ease, padding-left 0.2s ease;
+    border-left: 1px solid transparent;
+    margin-left: -19px;
+    padding-left: 18px;
+  }
+  .toc li a:hover {
+    color: var(--accent);
+    border-left-color: var(--accent);
+  }
+  .toc li.d3 a { padding-left: 30px; font-size: 11.8px; opacity: 0.82; }
+
+  @media (max-width: 1080px) {
+    .wrap { grid-template-columns: 1fr; gap: 0; }
+    .toc-col { display: none; }
+    .article { max-width: none; }
+  }
+  @media (max-width: 560px) {
+    .pn { grid-template-columns: 1fr; }
+    .pn-item.next { text-align: left; align-items: flex-start; }
+  }
+</style>

@@ -1,0 +1,610 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import HeroArt from '../components/HeroArt.astro';
+import ChibiArt from '../components/ChibiArt.astro';
+import Typewriter from '../components/Typewriter.astro';
+import PostCard from '../components/PostCard.astro';
+import {
+  getPosts,
+  CATEGORIES,
+  categoryCount,
+  postUrl,
+  wordCount,
+  tagList,
+} from '../lib/posts';
+
+const posts = await getPosts();
+const counts = categoryCount(posts);
+const featured = posts.filter((p) => p.data.featured).slice(0, 2);
+const latest = posts.filter((p) => !featured.includes(p)).slice(0, 5);
+const tags = tagList(posts).slice(0, 9);
+
+const shortcuts = [
+  { href: '/works', label: '作品集', code: 'PORTFOLIO', desc: '做过的东西' },
+  { href: '/sites', label: '我的站点', code: 'SITES', desc: '散落在别处的主页' },
+  { href: '/guestbook', label: '留言板', code: 'GUESTBOOK', desc: '说点什么' },
+  { href: '/resume', label: '简历', code: 'RESUME', desc: '技能与经历' },
+  { href: '/links', label: '友链', code: 'FRIENDS', desc: '隔壁的邻居' },
+];
+---
+
+<BaseLayout title="lxxxhxx · 学习笔记与作品" suffix={false}>
+  <!-- ============ HERO ============ -->
+  <section class="hero">
+    <div class="shell hero-inner">
+      <div class="hero-copy">
+        <div class="status mono">
+          <span class="dot"></span>
+          <span>SYSTEM ONLINE</span>
+          <span class="rule"></span>
+          <span class="dim">EST. 2026</span>
+        </div>
+
+        <p class="kicker mono">// HELLO, WORLD</p>
+
+        <h1 class="welcome">
+          <Typewriter text="欢迎来到我的博客" speed={135} />
+        </h1>
+
+        <p class="intro">
+          我是 <strong>lxxxhxx</strong>。这里放着我的学习笔记、做过的东西，
+          和一些还没想明白的问题。绝大多数内容都很普通，
+          但我尽量保证它们是真的。
+        </p>
+
+        <div class="acts">
+          <a href="/posts" class="btn primary">
+            进去看看
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M5 12h13M12 5.5 18.5 12 12 18.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+          </a>
+          <a href="/about" class="btn">关于我</a>
+        </div>
+
+        <div class="facts mono">
+          <div class="fact"><b>{String(posts.length).padStart(2, '0')}</b><span>文章</span></div>
+          <div class="vline"></div>
+          <div class="fact"><b>{String(CATEGORIES.length).padStart(2, '0')}</b><span>分类</span></div>
+          <div class="vline"></div>
+          <div class="fact"><b>{String(tagList(posts).length).padStart(2, '0')}</b><span>标签</span></div>
+          <div class="vline"></div>
+          <div class="fact"><b>∞</b><span>待写</span></div>
+        </div>
+      </div>
+
+      <div class="hero-art">
+        <HeroArt />
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 分类入口 ============ -->
+  <section class="block cats">
+    <div class="shell">
+      <div class="sec-head reveal">
+        <div>
+          <p class="kicker mono">// NAVIGATE</p>
+          <h2>从哪儿开始看</h2>
+        </div>
+        <span class="sec-note mono">04 CATEGORIES / {posts.length} ENTRIES</span>
+      </div>
+
+      <div class="cat-grid">
+        {CATEGORIES.map((c, i) => (
+          <a href={`/categories/${c.slug}`} class="cat-card panel corners reveal">
+            <span class="cat-idx mono">0{i + 1}</span>
+            <div class="cat-body">
+              <div class="cat-top">
+                <h3>{c.name}</h3>
+                <span class="cat-code mono">{c.code}</span>
+              </div>
+              <p>{c.desc}</p>
+              <span class="cat-count mono">
+                {String(counts.get(c.name) ?? 0).padStart(2, '0')} POSTS
+                <i class="go" aria-hidden="true">→</i>
+              </span>
+            </div>
+            <ChibiArt size={132} tone={c.tone} class="cat-girl" />
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 精选 ============ -->
+  {featured.length > 0 && (
+    <section class="block">
+      <div class="shell">
+        <div class="sec-head reveal">
+          <div>
+            <p class="kicker mono">// PICKED</p>
+            <h2>值得先看的两篇</h2>
+          </div>
+          <a href="/posts" class="more-link mono">全部文章 →</a>
+        </div>
+
+        <div class="feature-list">
+          {featured.map((p, i) => (
+            <PostCard
+              href={postUrl(p)}
+              title={p.data.title}
+              description={p.data.description}
+              date={p.data.pubDate}
+              category={p.data.category}
+              tags={p.data.tags}
+              index={p.data.index ?? String(i + 1).padStart(2, '0')}
+              featured={true}
+              words={wordCount(p.body)}
+            />
+          ))}
+        </div>
+      </div>
+    </section>
+  )}
+
+  <!-- ============ 最新 ============ -->
+  <section class="block">
+    <div class="shell">
+      <div class="sec-head reveal">
+        <div>
+          <p class="kicker mono">// LATEST</p>
+          <h2>最近写的</h2>
+        </div>
+        <a href="/archive" class="more-link mono">按时间归档 →</a>
+      </div>
+
+      <div class="post-list">
+        {latest.map((p, i) => (
+          <PostCard
+            href={postUrl(p)}
+            title={p.data.title}
+            description={p.data.description}
+            date={p.data.pubDate}
+            category={p.data.category}
+            tags={p.data.tags}
+            index={String(featured.length + i + 1).padStart(2, '0')}
+            words={wordCount(p.body)}
+          />
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 标签 ============ -->
+  <section class="block">
+    <div class="shell">
+      <div class="tags-panel panel reveal">
+        <div class="tags-head">
+          <p class="kicker mono">// TAGS</p>
+          <h3>按关键词找</h3>
+        </div>
+        <div class="tag-cloud">
+          {tags.map(([t, n]) => (
+            <a href={`/tags/${encodeURIComponent(t)}`} class="chip">
+              {t}<span class="n mono">{n}</span>
+            </a>
+          ))}
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 其它地方 ============ -->
+  <section class="block">
+    <div class="shell">
+      <div class="sec-head reveal">
+        <div>
+          <p class="kicker mono">// ELSEWHERE</p>
+          <h2>这个站还有这些地方</h2>
+        </div>
+      </div>
+
+      <div class="short-grid">
+        {shortcuts.map((s, i) => (
+          <a href={s.href} class="short panel corners reveal">
+            <span class="short-code mono">{s.code}</span>
+            <h4>{s.label}</h4>
+            <p>{s.desc}</p>
+            <span class="short-no mono">0{i + 1}</span>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 订阅 ============ -->
+  <section class="block">
+    <div class="shell">
+      <div class="cta panel corners reveal">
+        <div class="cta-copy">
+          <p class="kicker mono">// SUBSCRIBE</p>
+          <h3>不想常来看？那就订阅。</h3>
+          <p class="cta-desc">用 RSS 阅读器订阅，有新文章时自动收到。没有邮件、不需要注册、不收集任何信息。</p>
+        </div>
+        <div class="cta-act">
+          <a href="/rss.xml" class="btn primary">RSS 订阅</a>
+          <a href="/guestbook" class="btn">留个言</a>
+        </div>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  /* ---------- HERO ---------- */
+  .hero {
+    padding: 72px 0 40px;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero-inner {
+    display: grid;
+    grid-template-columns: 1.08fr 0.92fr;
+    gap: 40px;
+    align-items: center;
+  }
+  .hero-copy { min-width: 0; }
+
+  .status {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 10.5px;
+    letter-spacing: 0.14em;
+    color: var(--text-3);
+    margin-bottom: 30px;
+  }
+  .dot {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: var(--accent-2);
+    box-shadow: 0 0 10px var(--accent-2);
+    animation: pulseRing 2.4s ease-out infinite;
+  }
+  .rule {
+    width: 34px;
+    height: 1px;
+    background: var(--line-strong);
+  }
+  .dim { opacity: 0.7; }
+
+  .kicker {
+    font-size: 11px;
+    letter-spacing: 0.22em;
+    color: var(--accent-2);
+    margin-bottom: 14px;
+    text-transform: uppercase;
+  }
+
+  .welcome {
+    font-size: clamp(30px, 4.6vw, 49px);
+    line-height: 1.28;
+    letter-spacing: 0.06em;
+    margin-bottom: 24px;
+    color: var(--text);
+    min-height: 1.32em;
+  }
+  .welcome :global(.txt) {
+    background: linear-gradient(102deg, var(--grad-a) 4%, var(--grad-b) 36%, var(--grad-c) 68%, var(--grad-a) 96%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    filter: drop-shadow(0 0 24px rgba(150, 120, 255, 0.28));
+  }
+  .welcome :global(.caret) {
+    background: var(--accent-2);
+    box-shadow: 0 0 14px var(--accent-2);
+  }
+
+  .intro {
+    font-size: 15.4px;
+    line-height: 1.95;
+    color: var(--text-2);
+    max-width: min(46ch, 100%);
+    margin-bottom: 30px;
+  }
+  .intro strong {
+    color: var(--text);
+    font-family: var(--font-mono);
+    font-weight: 500;
+    letter-spacing: 0.02em;
+  }
+
+  .acts {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 34px;
+  }
+
+  .facts {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    padding-top: 20px;
+    border-top: 1px solid var(--line-soft);
+  }
+  .fact {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+  }
+  .fact b {
+    font-size: 19px;
+    font-weight: 500;
+    color: var(--text);
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+  }
+  .fact span {
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    color: var(--text-3);
+  }
+  .vline {
+    width: 1px;
+    height: 26px;
+    background: var(--line);
+  }
+
+  .hero-art {
+    position: relative;
+    width: min(var(--art-w, 336px), 100%);
+    margin-inline: auto;
+  }
+
+  /* ---------- 区块 ---------- */
+  .block { padding-top: 76px; }
+
+  .sec-head {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 20px;
+    margin-bottom: 28px;
+    padding-bottom: 18px;
+    border-bottom: 1px solid var(--line);
+  }
+  .sec-head h2 {
+    font-size: clamp(23px, 3vw, 29px);
+    margin-top: 6px;
+  }
+  .sec-note, .more-link {
+    font-size: 10.5px;
+    letter-spacing: 0.12em;
+    color: var(--text-3);
+    white-space: nowrap;
+  }
+  .more-link {
+    color: var(--accent-2);
+    transition: color 0.24s ease, gap 0.24s ease;
+  }
+  .more-link:hover { color: var(--accent); }
+
+  /* ---------- 分类卡 ---------- */
+  .cat-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+  }
+  .cat-card {
+    position: relative;
+    display: block;
+    padding: 26px 24px 24px;
+    min-height: 186px;
+    overflow: hidden;
+    isolation: isolate;
+  }
+  .cat-card:hover { transform: translateY(-4px); }
+
+  .cat-idx {
+    position: absolute;
+    top: 18px;
+    right: 20px;
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    color: var(--text-3);
+    opacity: 0.55;
+    z-index: 3;
+  }
+  .cat-body {
+    position: relative;
+    z-index: 3;
+    max-width: 58%;
+  }
+  .cat-top {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+  .cat-top h3 {
+    font-size: 21px;
+    transition: color 0.26s ease;
+  }
+  .cat-card:hover .cat-top h3 { color: var(--accent); }
+  .cat-code {
+    font-size: 9.5px;
+    letter-spacing: 0.16em;
+    color: var(--accent-2);
+    opacity: 0.75;
+  }
+  .cat-body p {
+    font-size: 13.2px;
+    line-height: 1.8;
+    color: var(--text-2);
+    margin-bottom: 16px;
+  }
+  .cat-count {
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    color: var(--text-3);
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .go {
+    font-style: normal;
+    color: var(--accent-2);
+    opacity: 0;
+    transform: translateX(-4px);
+    transition: all 0.28s ease;
+  }
+  .cat-card:hover .go {
+    opacity: 1;
+    transform: none;
+  }
+
+  :global(.cat-girl) {
+    --pos: absolute;
+    right: 16px;
+    bottom: 14px;
+    z-index: 1;
+    opacity: 0.96;
+    pointer-events: none;
+  }
+  .cat-card:hover :global(.cat-girl) {
+    transform: rotate(0deg) scale(1.05);
+    opacity: 1;
+  }
+
+  /* ---------- 文章列表 ---------- */
+  .feature-list, .post-list {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  /* ---------- 标签 ---------- */
+  .tags-panel {
+    padding: 28px 30px;
+    display: grid;
+    grid-template-columns: 190px 1fr;
+    gap: 30px;
+    align-items: center;
+  }
+  .tags-head h3 { font-size: 20px; margin-top: 4px; }
+  .tag-cloud {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .tag-cloud .chip {
+    padding: 5px 13px;
+    font-size: 12.5px;
+  }
+  .chip .n {
+    font-size: 9.5px;
+    opacity: 0.6;
+    margin-left: 2px;
+  }
+
+  /* ---------- 快捷入口 ---------- */
+  .short-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 12px;
+  }
+  .short {
+    display: block;
+    padding: 20px 18px 18px;
+    position: relative;
+    min-height: 132px;
+    overflow: hidden;
+  }
+  .short:hover { transform: translateY(-3px); }
+  .short-code {
+    font-size: 9px;
+    letter-spacing: 0.16em;
+    color: var(--accent-2);
+    opacity: 0.8;
+  }
+  .short h4 {
+    font-size: 16.5px;
+    margin: 10px 0 6px;
+  }
+  .short p {
+    font-size: 12px;
+    color: var(--text-3);
+    line-height: 1.6;
+  }
+  .short-no {
+    position: absolute;
+    right: 14px;
+    bottom: 12px;
+    font-size: 22px;
+    color: var(--text-3);
+    opacity: 0.16;
+  }
+
+  /* ---------- CTA ---------- */
+  .cta {
+    padding: 34px 34px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 26px;
+    background: linear-gradient(112deg, var(--accent-soft), transparent 58%), var(--panel);
+  }
+  .cta h3 {
+    font-size: 23px;
+    margin: 6px 0 10px;
+  }
+  .cta-desc {
+    font-size: 13.4px;
+    color: var(--text-2);
+    max-width: 48ch;
+    line-height: 1.8;
+  }
+  .cta-act {
+    display: flex;
+    gap: 10px;
+    flex-shrink: 0;
+    flex-wrap: wrap;
+  }
+
+  /* ---------- 响应式 ---------- */
+  @media (max-width: 980px) {
+    .hero-inner {
+      grid-template-columns: 1fr;
+      gap: 8px;
+    }
+    .hero { padding-top: 40px; }
+    .hero-art {
+      --art-w: 208px;
+      margin: 0 auto;
+      order: -1;
+    }
+    .hero-copy { order: 1; }
+    .short-grid { grid-template-columns: repeat(3, 1fr); }
+    .tags-panel {
+      grid-template-columns: 1fr;
+      gap: 18px;
+      padding: 24px;
+    }
+  }
+  @media (max-width: 760px) {
+    .cat-grid { grid-template-columns: 1fr; }
+    .cat-body { max-width: 66%; }
+    .short-grid { grid-template-columns: repeat(2, 1fr); }
+    .cta {
+      flex-direction: column;
+      align-items: flex-start;
+      padding: 26px 22px;
+    }
+    .block { padding-top: 56px; }
+    .sec-head {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 8px;
+    }
+    .facts { gap: 13px; }
+  }
+  @media (max-width: 460px) {
+    .hero-art { --art-w: 168px; }
+    .cat-body { max-width: 62%; }
+    :global(.cat-girl) { right: 12px; bottom: 12px; }
+  }
+</style>
