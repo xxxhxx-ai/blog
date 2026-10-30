@@ -1,0 +1,32 @@
+{
+  "items": [
+    {
+      "name": "GitHub",
+      "url": "https://github.com/xxxhxx-ai",
+      "desc": "代码与项目仓库",
+      "code": "GH",
+      "tag": "代码"
+    },
+    {
+      "name": "Bilibili",
+      "url": "https://space.bilibili.com",
+      "desc": "偶尔发点视频",
+      "code": "BL",
+      "tag": "视频"
+    },
+    {
+      "name": "小红书",
+      "url": "https://www.xiaohongshu.com",
+      "desc": "随手记的碎片",
+      "code": "XHS",
+      "tag": "生活"
+    },
+    {
+      "name": "邮箱",
+      "url": "mailto:hello@example.com",
+      "desc": "有事可以直接写邮件",
+      "code": "MAIL",
+      "tag": "联系"
+    }
+  ]
+}

@@ -1,0 +1,28 @@
+{
+  "items": [
+    {
+      "name": "Astro",
+      "url": "https://astro.build",
+      "desc": "本站使用的静态站点框架",
+      "avatar": "A"
+    },
+    {
+      "name": "MDN",
+      "url": "https://developer.mozilla.org",
+      "desc": "前端查文档最快的地方",
+      "avatar": "M"
+    },
+    {
+      "name": "GitHub",
+      "url": "https://github.com",
+      "desc": "代码住在这里",
+      "avatar": "G"
+    },
+    {
+      "name": "你的朋友",
+      "url": "#",
+      "desc": "把这里换成你朋友的博客",
+      "avatar": "友"
+    }
+  ]
+}

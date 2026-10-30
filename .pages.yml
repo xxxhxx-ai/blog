@@ -1,12 +1,13 @@
 # ============================================================
 # Pages CMS 配置 —— 免费的网页后台
 # 打开 https://app.pagescms.org 用 GitHub 登录，选择本仓库，
-# 就能在网页上写文章、传图片，保存即自动发布。
+# 就能在网页上改文章、站点、友链、作品和简历，保存即自动发布。
 # ============================================================
 
 media: public/uploads
 
 content:
+  # ---------- 文章 ----------
   - name: posts
     label: 文章
     type: collection
@@ -75,3 +76,169 @@ content:
       - name: body
         label: 正文
         type: rich-text
+
+  # ---------- 我的站点 ----------
+  - name: sites
+    label: 我的站点
+    type: file
+    path: src/data/sites.json
+    fields:
+      - name: items
+        label: 站点列表
+        description: 首页「这个站还有这些地方」和 /sites 页面都读这里
+        type: object
+        list: true
+        fields:
+          - name: name
+            label: 名称
+            type: string
+            required: true
+          - name: url
+            label: 链接
+            description: 完整的 https:// 地址，邮箱用 mailto: 开头
+            type: string
+            required: true
+          - name: desc
+            label: 一句描述
+            type: string
+          - name: code
+            label: 短代码
+            description: 卡片左上角的小字，如 GH、BL
+            type: string
+          - name: tag
+            label: 标签
+            description: 卡片右上角，如 代码、视频
+            type: string
+
+  # ---------- 友链 ----------
+  - name: friends
+    label: 友链
+    type: file
+    path: src/data/friends.json
+    fields:
+      - name: items
+        label: 友链列表
+        type: object
+        list: true
+        fields:
+          - name: name
+            label: 站点名称
+            type: string
+            required: true
+          - name: url
+            label: 链接
+            type: string
+            required: true
+          - name: desc
+            label: 一句话介绍
+            type: string
+          - name: avatar
+            label: 头像文字
+            description: 显示在方块里的一个字或字母
+            type: string
+
+  # ---------- 作品集 ----------
+  - name: works
+    label: 作品集
+    type: file
+    path: src/data/works.json
+    fields:
+      - name: items
+        label: 作品列表
+        type: object
+        list: true
+        fields:
+          - name: title
+            label: 标题
+            type: string
+            required: true
+          - name: year
+            label: 年份
+            type: string
+          - name: role
+            label: 你的角色
+            type: string
+          - name: stack
+            label: 技术栈
+            type: string
+            list: true
+          - name: desc
+            label: 描述
+            type: text
+          - name: href
+            label: 点击后去往
+            description: '/posts/xxx 这样的站内路径，或完整外链'
+            type: string
+          - name: status
+            label: 状态
+            type: select
+            options:
+              values:
+                - 已上线
+                - 已完成
+                - 持续更新
+                - 占位
+          - name: tone
+            label: 配色
+            description: 0 紫 / 1 薄荷 / 2 粉 / 3 奶金
+            type: number
+
+  # ---------- 简历 ----------
+  - name: resume
+    label: 简历
+    type: file
+    path: src/data/resume.json
+    fields:
+      - name: name
+        label: 名字
+        type: string
+      - name: title
+        label: 身份
+        description: 如「学生 / 独立开发者」
+        type: string
+      - name: location
+        label: 所在地
+        type: string
+      - name: summary
+        label: 自我介绍
+        type: text
+      - name: skills
+        label: 技能
+        type: object
+        list: true
+        fields:
+          - name: group
+            label: 分组名
+            type: string
+          - name: items
+            label: 具体技能
+            type: string
+            list: true
+      - name: timeline
+        label: 经历
+        type: object
+        list: true
+        fields:
+          - name: period
+            label: 时间段
+            type: string
+          - name: title
+            label: 标题
+            type: string
+          - name: desc
+            label: 描述
+            type: text
+      - name: contact
+        label: 联系方式
+        type: object
+        list: true
+        fields:
+          - name: label
+            label: 名称
+            type: string
+          - name: value
+            label: 显示的文字
+            type: string
+          - name: href
+            label: 链接
+            type: string
