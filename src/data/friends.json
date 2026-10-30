@@ -3,7 +3,7 @@
     {
       "name": "Astro",
       "url": "https://astro.build",
-      "desc": "本站使用的静态站点框架",
+      "desc": "默默无闻",
       "avatar": "A"
     },
     {
@@ -15,14 +15,14 @@
     {
       "name": "GitHub",
       "url": "https://github.com",
-      "desc": "代码住在这里",
+      "desc": "代码最多的地方",
       "avatar": "G"
     },
     {
-      "name": "你的朋友",
+      "name": "我的工具",
       "url": "#",
-      "desc": "把这里换成你朋友的博客",
-      "avatar": "友"
+      "desc": "需要的工具",
+      "avatar": "代"
     }
   ]
 }
