@@ -43,7 +43,10 @@
 4. 左侧会出现「文章」→ 新建 → 填标题、摘要、分类、正文
 5. 点保存 → 等 1–2 分钟，网站自动更新
 
-后台的字段定义在 `.pages.yml` 里，想加字段（比如封面图）改这个文件就行。
+后台能改的东西已经不止文章了——左侧菜单里有 **文章 / 我的站点 / 友链 / 作品集 / 简历** 五个入口，
+都是填表格，不用看到任何代码。
+
+后台的字段定义在 `.pages.yml` 里，想加字段（比如封面图、外链作者）改这个文件就行。
 
 > 这是目前唯一能同时满足「免费」+「有网页后台」的方案。代价是登录需要 GitHub 账号。
 
@@ -114,10 +117,10 @@ export const GISCUS = {
 | 想改什么 | 改哪个文件 |
 |---|---|
 | 站点名、域名、邮箱 | `src/data/site.ts` |
-| 友链列表 | `src/data/site.ts` → `FRIENDS` |
-| 我的站点（导航页） | `src/data/site.ts` → `MY_SITES` |
-| 作品集 | `src/data/site.ts` → `WORKS` |
-| 简历内容 | `src/data/site.ts` → `RESUME` |
+| 友链列表 | `src/data/friends.json`（或网页后台「友链」） |
+| 我的站点 | `src/data/sites.json`（或网页后台「我的站点」） |
+| 作品集 | `src/data/works.json`（或网页后台「作品集」） |
+| 简历内容 | `src/data/resume.json`（或网页后台「简历」） |
 | 欢迎语 | `src/pages/index.astro` → 搜 `欢迎来到我的博客` |
 | 主题色、字体 | `src/styles/global.css` 顶部的 CSS 变量 |
 | 分类名称/描述 | `src/lib/posts.ts` → `CATEGORIES` |
