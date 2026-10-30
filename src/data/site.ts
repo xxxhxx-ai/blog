@@ -7,7 +7,7 @@ export const SITE = {
   author: 'lxxxhxx',
   tagline: '学习笔记与作品集',
   description: 'lxxxhxx 的学习笔记、做过的项目，和一些还没想明白的问题。',
-  url: 'https://lxxxhxx.github.io',
+  url: 'https://xxxhxx-ai.github.io/blog',
   email: 'hello@example.com',
   startYear: 2026,
 };

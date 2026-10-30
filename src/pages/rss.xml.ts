@@ -3,6 +3,8 @@ import type { APIContext } from 'astro';
 import { getPosts, postUrl } from '../lib/posts';
 import { SITE } from '../data/site';
 
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+
 export async function GET(context: APIContext) {
   const posts = await getPosts();
 
@@ -14,7 +16,7 @@ export async function GET(context: APIContext) {
       title: p.data.title,
       description: p.data.description,
       pubDate: new Date(p.data.pubDate),
-      link: postUrl(p),
+      link: `${base}${postUrl(p)}`,
       categories: [p.data.category, ...p.data.tags],
       author: SITE.author,
     })),
