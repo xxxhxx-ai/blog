@@ -1,12 +1,16 @@
 ---
-title: Git 命令速查（我的个人笔记）
+title: Git 命令速查
 description: 只记我真正用得到的 15 条。按「我在干什么」分类，不按命令名分类。
 pubDate: 2026-09-05
 category: 学习笔记
-tags: ["Git", "速查", "笔记"]
+tags:
+  - Git
+  - 速查
+  - 笔记
+featured: false
+draft: false
 index: "07"
 ---
-
 网上 Git 教程都是按命令分类的，但我在终端里想的是"我要干什么"。所以按**意图**重排了一遍。
 
 ## 我想撤销刚才的修改
