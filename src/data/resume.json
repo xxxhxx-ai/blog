@@ -2,32 +2,69 @@
   "name": "lxxxhxx",
   "title": "学生 / 独立开发者",
   "location": "中国",
-  "summary": "喜欢把想法做成能跑的东西。比起堆功能，更在意一个东西是否真的被用起来。目前主要在做前端与小程序，也在学着把设计做得更耐看。",
+  "summary": "数字媒体技术专业学生，偏向技术方向，要学Python脚本、视频剪辑与简单前端开发，喜欢折腾小工具、做多媒体项目",
   "skills": [
-    { "group": "前端", "items": ["HTML / CSS", "JavaScript", "TypeScript", "Astro", "React"] },
-    { "group": "移动端", "items": ["微信小程序", "云开发"] },
-    { "group": "工具", "items": ["Git", "Figma", "VS Code", "Vite"] },
-    { "group": "正在学", "items": ["Node.js", "数据库设计", "排版与视觉"] }
+    {
+      "group": "前端",
+      "items": [
+        "HTML / CSS",
+        "JavaScript",
+        "TypeScript",
+        "Astro",
+        "React"
+      ]
+    },
+    {
+      "group": "移动端",
+      "items": [
+        "微信小程序",
+        "云开发"
+      ]
+    },
+    {
+      "group": "工具",
+      "items": [
+        "Git",
+        "Figma",
+        "VS Code",
+        "Vite"
+      ]
+    },
+    {
+      "group": "正在学",
+      "items": [
+        "Node.js",
+        "python"
+      ]
+    }
   ],
   "timeline": [
     {
       "period": "2026 — 现在",
       "title": "个人博客与作品集",
-      "desc": "独立完成本站的设计、开发与内容体系，从零建立起一套可长期维护的写作流程。"
+      "desc": "独立完成本站的设计、开发与内容体系，从零建立起一套可长期维护的写作流程"
     },
     {
       "period": "2026",
       "title": "校园二手书交易小程序",
-      "desc": "独立完成需求调研、产品设计与开发上线。6 周内交付，服务 200+ 校内用户。"
+      "desc": "独立完成需求调研、产品设计与开发上线。6 周内交付，服务 200+ 校内用户"
     },
     {
       "period": "2025 — 2026",
       "title": "课程项目若干",
-      "desc": "参与多个课程小组项目，主要负责界面实现与前端交互部分。"
+      "desc": "参与多个课程小组项目，主要负责界面实现与前端交互部分"
     }
   ],
   "contact": [
-    { "label": "Email", "value": "hello@example.com", "href": "mailto:hello@example.com" },
-    { "label": "GitHub", "value": "github.com/xxxhxx-ai", "href": "https://github.com/xxxhxx-ai" }
+    {
+      "label": "Email",
+      "value": "1562469732",
+      "href": "1562469732@qq.com"
+    },
+    {
+      "label": "GitHub",
+      "value": "github.com/xxxhxx-ai",
+      "href": "https://github.com/xxxhxx-ai"
+    }
   ]
 }
