@@ -1,10 +1,13 @@
 {
   "items": [
     {
-      "title": "校园二手书交易小程序",
+      "title": "小程序",
       "year": "2026",
       "role": "独立开发",
-      "stack": ["微信小程序", "云开发"],
+      "stack": [
+        "微信小程序",
+        "云开发"
+      ],
       "desc": "一个学期内 218 人注册、成交 143 本书的校内二手书平台。没做支付，只做撮合。",
       "href": "/posts/campus-book-miniapp",
       "status": "已上线",
@@ -14,17 +17,24 @@
       "title": "会呼吸的星空",
       "year": "2026",
       "role": "实验",
-      "stack": ["CSS", "生成艺术"],
-      "desc": "3.2KB，零图片、零框架、零依赖，只有一片会随时间明暗起伏的星空。",
+      "stack": [
+        "CSS",
+        "生成艺术"
+      ],
+      "desc": "3.2KB，零图片、零框架、零依赖，只有一片会随时间明暗起伏的星空",
       "href": "/posts/css-starry-sky",
       "status": "已完成",
       "tone": 0
     },
     {
-      "title": "个人博客（就是这里）",
+      "title": "个人博客",
       "year": "2026",
       "role": "设计 + 开发",
-      "stack": ["Astro", "TypeScript", "CSS"],
+      "stack": [
+        "Astro",
+        "TypeScript",
+        "CSS"
+      ],
       "desc": "从结构、视觉到内容全部自己做的一个站。深色主题、双主题切换、RSS、全文搜索。",
       "href": "/about",
       "status": "持续更新",
@@ -34,8 +44,7 @@
       "title": "待补充的作品",
       "year": "—",
       "role": "—",
-      "stack": [],
-      "desc": "这里留给下一个还没开始的项目。在网页后台把这一项替换掉就行。",
+      "desc": "暂时没有",
       "href": "#",
       "status": "占位",
       "tone": 3
