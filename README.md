@@ -6,33 +6,30 @@
 
 ---
 
-## 一、三步上线
+## 一、当前状态
 
-### 第 1 步：建一个 GitHub 账号
+**已经部署上线了**，不需要再配置任何东西：
 
-去 <https://github.com> 注册。免费。
+| 项目 | 地址 |
+|---|---|
+| 网站 | https://xxxhxx-ai.github.io/blog/ |
+| 仓库 | https://github.com/xxxhxx-ai/blog |
+| 部署记录 | https://github.com/xxxhxx-ai/blog/actions |
 
-### 第 2 步：建仓库并上传代码
+工作方式是：往 `main` 分支推代码 → GitHub Actions 自动构建 → 发布到 Pages，全程 1–2 分钟。
+所以你每次**改完内容提交，等 Actions 变绿，刷新网址就能看到更新**。
 
-1. 新建仓库，名字建议 **`lxxxhxx.github.io`**
-   - 这个名字有讲究：用 `用户名.github.io` 做仓库名，网站地址就是 `https://用户名.github.io`，最干净。
-   - 如果用别的名字（比如 `blog`），地址会变成 `https://用户名.github.io/blog`，那时需要多改一个配置（见文末「常见问题」）。
-2. 把本文件夹里的所有文件传上去。两种方式都行：
-   - **网页上传**：仓库页面 → `Add file` → `Upload files` → 把文件拖进去（注意不要把 `node_modules` 和 `dist` 传上去）
-   - **命令行**：见下方「本地开发」的 git 部分
+### 为什么网址带 /blog
 
-### 第 3 步：开启自动部署
+仓库名是 `blog`，站点就挂在子路径下。`astro.config.mjs` 里配了 `base: '/blog'`，
+另外还有一个构建后处理（`baseHref`）自动给所有站内链接补前缀——**不要手动删掉 base**，
+否则全站链接会 404。
 
-1. 进入仓库 → `Settings` → `Pages`
-2. `Build and deployment` → `Source` 选 **GitHub Actions**
-3. 回到仓库 → `Actions` 标签，会看到一次正在跑的部署
-4. 等它变绿，访问 `https://你的用户名.github.io`
+想让网址变成 `https://xxxhxx-ai.github.io`（不带 /blog）的话：
 
-**之后每次你修改内容，网站会自动重新构建并发布**，通常 1–2 分钟。
-
-> 改之前记得改 `astro.config.mjs` 里的 `site`，改成你自己的真实地址。RSS 和 sitemap 依赖它。
-
----
+1. GitHub 仓库 Settings → 最上方 Rename 改成 `xxxhxx-ai.github.io`
+2. `astro.config.mjs` 删掉 `base: '/blog'` 这一行
+3. `src/data/site.ts` 的 `url` 改成 `https://xxxhxx-ai.github.io`
 
 ## 二、怎么发文章
 
