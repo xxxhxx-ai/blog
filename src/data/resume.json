@@ -5,23 +5,6 @@
   "summary": "数字媒体技术专业学生，偏向技术方向，要学Python脚本、视频剪辑与简单前端开发，喜欢折腾小工具、做多媒体项目",
   "skills": [
     {
-      "group": "前端",
-      "items": [
-        "HTML / CSS",
-        "JavaScript",
-        "TypeScript",
-        "Astro",
-        "React"
-      ]
-    },
-    {
-      "group": "移动端",
-      "items": [
-        "微信小程序",
-        "云开发"
-      ]
-    },
-    {
       "group": "工具",
       "items": [
         "Git",
