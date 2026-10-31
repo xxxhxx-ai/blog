@@ -39,9 +39,9 @@ const statusTone: Record<string, string> = {
             <span>{w.role}</span>
           </div>
 
-          {w.stack.length > 0 && (
+          {(w.stack?.length ?? 0) > 0 && (
             <div class="w-stack">
-              {w.stack.map((s) => <span class="chip">{s}</span>)}
+              {(w.stack ?? []).map((s) => <span class="chip">{s}</span>)}
             </div>
           )}
 

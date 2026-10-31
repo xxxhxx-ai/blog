@@ -22,7 +22,7 @@ import { RESUME, SITE } from '../data/site';
         </div>
         <div class="r-contact mono">
           <span>{RESUME.location}</span>
-          {RESUME.contact.map((c) => (
+          {(RESUME.contact ?? []).map((c) => (
             <a href={c.href} target={c.href.startsWith('http') ? '_blank' : undefined} rel="noopener">
               {c.label} · {c.value}
             </a>
@@ -38,11 +38,11 @@ import { RESUME, SITE } from '../data/site';
       <section class="r-sec">
         <h2 class="mono">// 技能</h2>
         <div class="skills">
-          {RESUME.skills.map((s) => (
+          {(RESUME.skills ?? []).map((s) => (
             <div class="skill-row">
               <span class="sk-k mono">{s.group}</span>
               <div class="sk-items">
-                {s.items.map((it) => <span class="chip">{it}</span>)}
+                {(s.items ?? []).map((it) => <span class="chip">{it}</span>)}
               </div>
             </div>
           ))}
@@ -52,7 +52,7 @@ import { RESUME, SITE } from '../data/site';
       <section class="r-sec">
         <h2 class="mono">// 经历</h2>
         <div class="timeline">
-          {RESUME.timeline.map((t) => (
+          {(RESUME.timeline ?? []).map((t) => (
             <div class="tl-item">
               <span class="tl-period mono">{t.period}</span>
               <div class="tl-body">
