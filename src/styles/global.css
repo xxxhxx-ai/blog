@@ -1,40 +1,37 @@
 /* ===================================================================
    lxxxhxx · 设计系统
-   深色简约技术风：深蓝黑底 / 单色青蓝高亮 / 细边框 / 克制动效
+   二次元 × 科技文艺：深空底色 / 等宽字符 / 衬线中文 / 光晕线稿
    =================================================================== */
 
 /* ---------- 主题变量 ---------- */
 :root,
 :root[data-theme="dark"] {
-  --bg: #0f141c;
-  --bg-1: #121925;
-  --bg-2: #1a2231;
-  --panel: #161d2b;
-  --panel-solid: #161d2b;
-  --line: #233044;
-  --line-soft: #1a2434;
-  --line-strong: #2e3f57;
+  --bg: #08090f;
+  --bg-1: #0c0e16;
+  --bg-2: #12151f;
+  --panel: rgba(26, 31, 46, 0.66);
+  --panel-solid: #141824;
+  --line: rgba(150, 160, 255, 0.18);
+  --line-soft: rgba(150, 160, 255, 0.09);
+  --line-strong: rgba(150, 160, 255, 0.34);
 
-  /* 正文 / 次要 / 更淡 */
-  --text: #e2e8f0;
-  --text-2: #94a3b8;
-  --text-3: #64748b;
+  --text: #e8ebf7;
+  --text-2: #a8b0c7;
+  --text-3: #6c748c;
 
-  /* 单一高亮色，其余两级是它的深浅变体 */
-  --accent: #38bdf8;
-  --accent-2: #7dd3fc;
-  --accent-3: #0ea5e9;
-  --accent-soft: rgba(56, 189, 248, 0.1);
+  --accent: #b794ff;
+  --accent-2: #6ee7f9;
+  --accent-3: #ff9ad5;
+  --accent-soft: rgba(183, 148, 255, 0.13);
 
-  /* 卡片悬浮：微弱蓝光 */
-  --glow: 0 0 12px rgba(56, 189, 248, 0.08);
-  --grid: rgba(56, 189, 248, 0.04);
-  --shadow: 0 12px 32px -16px rgba(0, 0, 0, 0.7);
+  --glow: 0 0 40px rgba(150, 120, 255, 0.16);
+  --grid: rgba(150, 160, 255, 0.045);
+  --shadow: 0 18px 48px -18px rgba(0, 0, 0, 0.85);
 
-  /* 渐变文字三色（同一色系，避免花哨） */
-  --grad-a: #e2e8f0;
-  --grad-b: #38bdf8;
-  --grad-c: #7dd3fc;
+  /* 渐变文字三色 */
+  --grad-a: #e8ebf7;
+  --grad-b: #b794ff;
+  --grad-c: #6ee7f9;
 
   --font-serif: "Songti SC", "Noto Serif SC", "Source Han Serif SC", "SimSun", Georgia, serif;
   --font-mono: "JetBrains Mono", "Cascadia Code", "SF Mono", Consolas, "Courier New", monospace;
@@ -44,31 +41,31 @@
 }
 
 :root[data-theme="light"] {
-  --bg: #f6f8fa;
-  --bg-1: #fbfcfd;
-  --bg-2: #eef2f6;
-  --panel: #ffffff;
+  --bg: #f7f5f1;
+  --bg-1: #fcfaf7;
+  --bg-2: #f2efe9;
+  --panel: rgba(255, 255, 255, 0.76);
   --panel-solid: #ffffff;
-  --line: #d7e0ea;
-  --line-soft: #e6edf4;
-  --line-strong: #b9c8d8;
+  --line: rgba(64, 48, 100, 0.13);
+  --line-soft: rgba(64, 48, 100, 0.07);
+  --line-strong: rgba(64, 48, 100, 0.3);
 
-  --text: #16202e;
-  --text-2: #52667e;
-  --text-3: #8496ab;
+  --text: #1d1a26;
+  --text-2: #514c60;
+  --text-3: #8b8598;
 
-  --accent: #0284c7;
-  --accent-2: #0369a1;
-  --accent-3: #0ea5e9;
-  --accent-soft: rgba(2, 132, 199, 0.08);
+  --accent: #7549e0;
+  --accent-2: #0e8f86;
+  --accent-3: #d44a97;
+  --accent-soft: rgba(117, 73, 224, 0.09);
 
-  --glow: 0 0 12px rgba(2, 132, 199, 0.1);
-  --grid: rgba(2, 132, 199, 0.045);
-  --shadow: 0 12px 28px -18px rgba(20, 40, 60, 0.28);
+  --glow: 0 0 40px rgba(117, 73, 224, 0.1);
+  --grid: rgba(64, 48, 100, 0.05);
+  --shadow: 0 18px 40px -22px rgba(60, 44, 90, 0.3);
 
-  --grad-a: #16202e;
-  --grad-b: #0284c7;
-  --grad-c: #0ea5e9;
+  --grad-a: #1d1a26;
+  --grad-b: #6438cd;
+  --grad-c: #0a6e67;
 
   color-scheme: light;
 }
@@ -122,14 +119,16 @@ body::after {
   z-index: -3;
   pointer-events: none;
   background:
-    radial-gradient(ellipse 62% 46% at 74% -10%, rgba(56, 189, 248, 0.07), transparent 68%),
-    radial-gradient(ellipse 54% 40% at 8% 2%, rgba(56, 189, 248, 0.035), transparent 70%);
+    radial-gradient(ellipse 60% 42% at 78% -8%, rgba(150, 110, 255, 0.2), transparent 70%),
+    radial-gradient(ellipse 46% 36% at 12% 4%, rgba(110, 231, 249, 0.13), transparent 70%),
+    radial-gradient(ellipse 70% 50% at 50% 105%, rgba(255, 154, 213, 0.08), transparent 70%);
 }
 
 :root[data-theme="light"] body::after {
   background:
-    radial-gradient(ellipse 62% 46% at 74% -10%, rgba(2, 132, 199, 0.07), transparent 68%),
-    radial-gradient(ellipse 54% 40% at 8% 2%, rgba(2, 132, 199, 0.04), transparent 70%);
+    radial-gradient(ellipse 60% 42% at 78% -8%, rgba(150, 110, 255, 0.14), transparent 70%),
+    radial-gradient(ellipse 46% 36% at 12% 4%, rgba(14, 143, 134, 0.09), transparent 70%),
+    radial-gradient(ellipse 70% 50% at 50% 105%, rgba(212, 74, 151, 0.06), transparent 70%);
 }
 
 /* ---------- 排版 ---------- */
@@ -146,8 +145,8 @@ img, svg { display: block; max-width: 100%; }
 button { font: inherit; color: inherit; background: none; border: none; cursor: pointer; }
 
 ::selection {
-  background: rgba(56, 189, 248, 0.28);
-  color: var(--text);
+  background: var(--accent);
+  color: #07080d;
 }
 
 :focus-visible {
@@ -199,20 +198,23 @@ button { font: inherit; color: inherit; background: none; border: none; cursor: 
 }
 
 .glow-text {
-  color: var(--text);
+  background: linear-gradient(112deg, var(--text) 8%, var(--accent) 46%, var(--accent-2) 78%, var(--text) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
 /* ---------- 卡片 ---------- */
 .panel {
   position: relative;
-  background: var(--panel);
+  background:
+    linear-gradient(158deg, rgba(255, 255, 255, 0.05), transparent 46%),
+    var(--panel);
   border: 1px solid var(--line);
-  border-radius: 12px;
-  transition:
-    border-color 0.25s ease,
-    box-shadow 0.25s ease,
-    transform 0.25s ease,
-    background-color 0.25s ease;
+  border-radius: 16px;
+  backdrop-filter: blur(14px) saturate(1.15);
+  -webkit-backdrop-filter: blur(14px) saturate(1.15);
+  transition: border-color 0.3s ease, transform 0.35s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.35s ease;
 }
 
 .panel:hover {
@@ -235,12 +237,12 @@ button { font: inherit; color: inherit; background: none; border: none; cursor: 
 .corners::before {
   top: -1px; left: -1px;
   border-right: none; border-bottom: none;
-  border-top-left-radius: 12px;
+  border-top-left-radius: 16px;
 }
 .corners::after {
   bottom: -1px; right: -1px;
   border-left: none; border-top: none;
-  border-bottom-right-radius: 12px;
+  border-bottom-right-radius: 16px;
 }
 .corners:hover::before,
 .corners:hover::after { opacity: 0.9; }
@@ -252,34 +254,30 @@ button { font: inherit; color: inherit; background: none; border: none; cursor: 
   gap: 9px;
   padding: 11px 20px;
   border: 1px solid var(--line-strong);
-  border-radius: 8px;
+  border-radius: 999px;
   font-size: 13.5px;
   font-family: var(--font-mono);
   letter-spacing: 0.03em;
   color: var(--text);
   background: var(--panel);
-  transition:
-    border-color 0.2s ease,
-    color 0.2s ease,
-    background-color 0.2s ease,
-    box-shadow 0.2s ease;
+  transition: all 0.28s ease;
 }
 .btn:hover {
   border-color: var(--accent);
   color: var(--accent);
-  box-shadow: var(--glow);
+  box-shadow: 0 0 26px -6px var(--accent-soft);
+  transform: translateY(-1px);
 }
 .btn.primary {
-  background: var(--accent);
-  color: #0b1220;
-  border-color: var(--accent);
+  background: linear-gradient(112deg, var(--accent), var(--accent-2));
+  color: #08090e;
+  border-color: transparent;
   font-weight: 600;
 }
 .btn.primary:hover {
-  color: #0b1220;
-  background: #5cc8fa;
-  border-color: #5cc8fa;
-  box-shadow: var(--glow);
+  color: #08090e;
+  box-shadow: 0 10px 34px -12px var(--accent);
+  filter: brightness(1.06);
 }
 
 /* ---------- 标签 ---------- */
@@ -293,11 +291,8 @@ button { font: inherit; color: inherit; background: none; border: none; cursor: 
   letter-spacing: 0.04em;
   color: var(--text-2);
   border: 1px solid var(--line);
-  border-radius: 6px;
-  transition:
-    color 0.2s ease,
-    border-color 0.2s ease,
-    background-color 0.2s ease;
+  border-radius: 999px;
+  transition: all 0.24s ease;
   white-space: nowrap;
 }
 a.chip:hover {
@@ -367,11 +362,12 @@ a.chip:hover {
 .prose strong { color: var(--text); font-weight: 600; }
 .prose em { color: var(--accent-3); font-style: normal; }
 .prose a {
-  color: var(--accent);
-  border-bottom: 1px solid rgba(56, 189, 248, 0.35);
-  transition: border-color 0.2s ease, color 0.2s ease;
+  color: var(--accent-2);
+  border-bottom: 1px solid var(--line-strong);
+  transition: all 0.2s ease;
 }
 .prose a:hover {
+  color: var(--accent);
   border-bottom-color: var(--accent);
 }
 .prose ul, .prose ol { padding-left: 1.4em; }
@@ -385,7 +381,7 @@ a.chip:hover {
   border-radius: 5px;
   background: var(--accent-soft);
   border: 1px solid var(--line);
-  color: var(--accent);
+  color: var(--accent-2);
 }
 .prose pre {
   padding: 20px 22px;
@@ -529,51 +525,4 @@ a.btn:active,
   .reveal { opacity: 1; transform: none; }
   ::view-transition-old(root),
   ::view-transition-new(root) { animation: none; }
-}
-
-/* ===================================================================
-   组件内写死的强调色统一到主色
-   （只在此文件覆盖，不改组件本身）
-   =================================================================== */
-
-/* 首页主视觉的 HUD 环：SVG 表现属性优先级最低，可被 CSS 覆盖 */
-[stroke="#b794ff"],
-[stroke="#6ee7f9"] {
-  stroke: var(--accent);
-}
-
-/* 主视觉光晕：从紫青混合改为单色青蓝 */
-#hero-stage .halo {
-  background: radial-gradient(
-    ellipse 62% 52% at 50% 42%,
-    rgba(56, 189, 248, 0.2),
-    rgba(56, 189, 248, 0.06) 46%,
-    transparent 72%
-  );
-}
-
-:root[data-theme="light"] #hero-stage .halo {
-  background: radial-gradient(
-    ellipse 62% 52% at 50% 42%,
-    rgba(2, 132, 199, 0.14),
-    rgba(2, 132, 199, 0.04) 46%,
-    transparent 72%
-  );
-}
-
-/* 扫描线 */
-#hero-stage .scan {
-  background: linear-gradient(
-    90deg,
-    transparent,
-    rgba(56, 189, 248, 0.7),
-    rgba(125, 211, 252, 0.4),
-    transparent
-  );
-  box-shadow: 0 0 12px rgba(56, 189, 248, 0.4);
-}
-
-/* 欢迎标题的辉光：去掉紫色投影 */
-#main .welcome .txt {
-  filter: drop-shadow(0 0 22px rgba(56, 189, 248, 0.18));
 }
