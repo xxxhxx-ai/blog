@@ -152,11 +152,6 @@ const canonical = new URL(Astro.url.pathname, Astro.site ?? 'https://lxxxhxx.git
           display: none !important;
         }
       }
-      @media (prefers-reduced-motion: reduce) {
-        #waifu {
-          display: none !important;
-        }
-      }
     </style>
 
     <script is:inline>
@@ -308,10 +303,9 @@ const canonical = new URL(Astro.url.pathname, Astro.site ?? 'https://lxxxhxx.git
             });
         }
 
-        // 窄屏直接不加载
+        // 只在屏幕上加载（手机端隐藏是硬要求）
         var wide = window.matchMedia('(min-width: 768px)').matches;
-        var calm = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-        if (wide && !calm) {
+        if (wide) {
           if (document.readyState === 'loading') {
             document.addEventListener('DOMContentLoaded', boot);
           } else {
