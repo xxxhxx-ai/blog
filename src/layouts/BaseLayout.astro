@@ -101,6 +101,246 @@ const canonical = new URL(Astro.url.pathname, Astro.site ?? 'https://lxxxhxx.git
       initReveal();
     </script>
 
+    <!-- ================= Live2D 看板娘 ================= -->
+    <style is:inline>
+      /* 把一个原本"左下角、z-index:1"的挂件挪到右下角，并让它不挡正文点击 */
+      #waifu {
+        left: auto !important;
+        right: 8px !important;
+        bottom: 0 !important;
+        z-index: 40 !important;
+        margin-bottom: 0 !important;
+        line-height: 0;
+        pointer-events: none;
+        /* 用独立的 scale 属性缩小，不覆盖它自身的 transform 入场动画 */
+        scale: 0.78;
+        transform-origin: bottom right;
+      }
+      /* 只有角色本体和工具栏接鼠标，其余透明区域放行 */
+      #waifu canvas,
+      #waifu-tool {
+        pointer-events: auto;
+      }
+      #waifu canvas {
+        cursor: grab;
+        touch-action: none;
+      }
+      #waifu.l2d-dragging canvas {
+        cursor: grabbing;
+      }
+
+      /* 深色主题下把白色气泡换成深色 */
+      #waifu-tips {
+        background: rgba(22, 29, 43, 0.94) !important;
+        color: #e2e8f0 !important;
+        border: 1px solid rgba(150, 160, 255, 0.22) !important;
+        box-shadow: 0 10px 28px -14px rgba(0, 0, 0, 0.85) !important;
+        font-size: 13px !important;
+        border-radius: 10px !important;
+      }
+      #waifu-tool span {
+        color: #a8b0c7 !important;
+        transition: color 0.2s ease;
+      }
+      #waifu-tool span:hover {
+        color: #b794ff !important;
+      }
+
+      /* 手机端、窄屏、以及"减少动态效果"时都不显示，避免拥挤 */
+      @media (max-width: 767px) {
+        #waifu {
+          display: none !important;
+        }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        #waifu {
+          display: none !important;
+        }
+      }
+    </style>
+
+    <script is:inline>
+      (function () {
+        // 资源全部走 jsdelivr，国内可用的 fastly 节点
+        var BASE = 'https://fastly.jsdelivr.net/npm/live2d-widgets@0/';
+        var MODELS = 'https://fastly.jsdelivr.net/gh/fghrsh/live2d_api/';
+        var STASH = null;
+
+        function loadCSS(href) {
+          return new Promise(function (resolve, reject) {
+            var el = document.createElement('link');
+            el.rel = 'stylesheet';
+            el.href = href;
+            el.onload = resolve;
+            el.onerror = reject;
+            document.head.appendChild(el);
+          });
+        }
+
+        function loadJS(src) {
+          return new Promise(function (resolve, reject) {
+            var el = document.createElement('script');
+            el.src = src;
+            el.async = false;
+            el.onload = resolve;
+            el.onerror = reject;
+            document.head.appendChild(el);
+          });
+        }
+
+        function ensureCSS() {
+          if (document.querySelector('link[href*="waifu.css"]')) return Promise.resolve();
+          return loadCSS(BASE + 'waifu.css');
+        }
+
+        /* ---------- 位置与拖拽 ---------- */
+        function applyPosition(el) {
+          el.style.setProperty('left', 'auto', 'important');
+          el.style.setProperty('right', '8px', 'important');
+          el.style.setProperty('bottom', '0', 'important');
+          el.style.setProperty('z-index', '40', 'important');
+        }
+
+        function bindDrag(el) {
+          if (el.dataset.l2dDrag === '1') return;
+          el.dataset.l2dDrag = '1';
+
+          var target = el.querySelector('canvas') || el;
+          var drag = null;
+          var THRESHOLD = 5;
+
+          target.addEventListener('pointerdown', function (e) {
+            if (e.button !== 0) return;
+            if (e.target.closest && e.target.closest('#waifu-tool')) return;
+            var rect = el.getBoundingClientRect();
+            drag = {
+              x: e.clientX,
+              y: e.clientY,
+              moved: false,
+              right: Math.max(0, window.innerWidth - rect.right),
+              bottom: Math.max(0, window.innerHeight - rect.bottom),
+            };
+            el.style.transition = 'none';
+          });
+
+          window.addEventListener(
+            'pointermove',
+            function (e) {
+              if (!drag) return;
+              var dx = e.clientX - drag.x;
+              var dy = e.clientY - drag.y;
+              if (!drag.moved && Math.abs(dx) + Math.abs(dy) < THRESHOLD) return;
+
+              if (!drag.moved) {
+                drag.moved = true;
+                el.classList.add('l2d-dragging');
+              }
+
+              var maxRight = window.innerWidth - 60;
+              var maxBottom = window.innerHeight - 60;
+              var right = Math.min(maxRight, Math.max(0, drag.right - dx));
+              var bottom = Math.min(maxBottom, Math.max(0, drag.bottom + dy));
+
+              el.style.setProperty('right', right + 'px', 'important');
+              el.style.setProperty('bottom', bottom + 'px', 'important');
+              el.style.setProperty('left', 'auto', 'important');
+            },
+            { passive: true }
+          );
+
+          window.addEventListener('pointerup', function () {
+            if (!drag) return;
+            var moved = drag.moved;
+            drag = null;
+            el.classList.remove('l2d-dragging');
+            el.style.transition = '';
+
+            // 拖完那一下不要触发"换台词/切表情"
+            if (moved) {
+              var swallow = function (ev) {
+                ev.stopPropagation();
+                ev.preventDefault();
+              };
+              target.addEventListener('click', swallow, true);
+              setTimeout(function () {
+                target.removeEventListener('click', swallow, true);
+              }, 100);
+            }
+          });
+        }
+
+        function mount(el) {
+          applyPosition(el);
+          bindDrag(el);
+        }
+
+        /* ---------- 加载 ---------- */
+        function boot() {
+          if (window.__l2dBooted) return;
+          window.__l2dBooted = true;
+
+          Promise.all([ensureCSS(), loadJS(BASE + 'live2d.min.js')])
+            .then(function () {
+              return loadJS(BASE + 'waifu-tips.js');
+            })
+            .then(function () {
+              if (typeof window.initWidget !== 'function') return;
+              window.initWidget({
+                waifuPath: BASE + 'waifu-tips.json',
+                cdnPath: MODELS,
+                tools: ['hitokoto', 'switch-model', 'quit'],
+              });
+
+              // 挂件是异步渲染的，轮询等它出现
+              var tries = 0;
+              var timer = setInterval(function () {
+                var el = document.getElementById('waifu');
+                if (el) {
+                  clearInterval(timer);
+                  mount(el);
+                  return;
+                }
+                if (++tries > 60) clearInterval(timer);
+              }, 100);
+            })
+            .catch(function () {
+              // CDN 挂了就静默放弃，绝不影响页面本身
+            });
+        }
+
+        // 窄屏直接不加载
+        var wide = window.matchMedia('(min-width: 768px)').matches;
+        var calm = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        if (wide && !calm) {
+          if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', boot);
+          } else {
+            boot();
+          }
+        }
+
+        /* ---------- 视图过渡时保住它 ---------- */
+        // 站内跳转会替换 body，先把挂件摘下来，换完再挂回去
+        document.addEventListener('astro:before-swap', function () {
+          var el = document.getElementById('waifu');
+          if (el) {
+            STASH = el;
+            el.remove();
+          }
+        });
+
+        document.addEventListener('astro:after-swap', function () {
+          if (!STASH) return;
+          var el = STASH;
+          STASH = null;
+          ensureCSS().catch(function () {});
+          document.body.appendChild(el);
+          applyPosition(el);
+        });
+      })();
+    </script>
+    <!-- ================= /Live2D 看板娘 ================= -->
+
     <style>
       .skip {
         position: absolute;
