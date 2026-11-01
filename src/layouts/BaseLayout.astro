@@ -3,6 +3,8 @@ import '../styles/global.css';
 import { ClientRouter } from 'astro:transitions';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
+import { Image } from 'astro:assets';
+import petImage from '../assets/hero/maid.png';
 
 interface Props {
   title: string;
@@ -101,239 +103,256 @@ const canonical = new URL(Astro.url.pathname, Astro.site ?? 'https://lxxxhxx.git
       initReveal();
     </script>
 
-    <!-- ================= Live2D 看板娘 ================= -->
+    <!-- ================= 桌面宠物 ================= -->
     <style is:inline>
-      /* 把一个原本"左下角、z-index:1"的挂件挪到右下角，并让它不挡正文点击 */
-      #waifu {
-        left: auto !important;
-        right: 8px !important;
-        bottom: 0 !important;
-        z-index: 40 !important;
-        margin-bottom: 0 !important;
+      /* 右下角悬浮的看板娘 */
+      #pet {
+        position: fixed;
+        right: 12px;
+        bottom: 6px;
+        z-index: 40;
+        width: 196px;
         line-height: 0;
-        pointer-events: none;
-        /* 用独立的 scale 属性缩小，不覆盖它自身的 transform 入场动画 */
-        scale: 0.78;
-        transform-origin: bottom right;
-      }
-      /* 只有角色本体和工具栏接鼠标，其余透明区域放行 */
-      #waifu canvas,
-      #waifu-tool {
-        pointer-events: auto;
-      }
-      #waifu canvas {
         cursor: grab;
+        user-select: none;
+        -webkit-user-select: none;
         touch-action: none;
+        transform-origin: bottom center;
+        /* 入场：从下方升起 */
+        animation: petEnter 0.9s cubic-bezier(0.22, 1, 0.36, 1) both;
       }
-      #waifu.l2d-dragging canvas {
+      #pet.pet-dragging {
         cursor: grabbing;
       }
-
-      /* 深色主题下把白色气泡换成深色 */
-      #waifu-tips {
-        background: rgba(22, 29, 43, 0.94) !important;
-        color: #e2e8f0 !important;
-        border: 1px solid rgba(150, 160, 255, 0.22) !important;
-        box-shadow: 0 10px 28px -14px rgba(0, 0, 0, 0.85) !important;
-        font-size: 13px !important;
-        border-radius: 10px !important;
-      }
-      #waifu-tool span {
-        color: #a8b0c7 !important;
-        transition: color 0.2s ease;
-      }
-      #waifu-tool span:hover {
-        color: #b794ff !important;
+      @keyframes petEnter {
+        from {
+          opacity: 0;
+          transform: translateY(60px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
       }
 
-      /* 手机端、窄屏、以及"减少动态效果"时都不显示，避免拥挤 */
+      /* 主体：呼吸浮动 + 鼠标跟随（--px/--py 由脚本写入） */
+      #pet .pet-body {
+        display: block;
+        width: 100%;
+        height: auto;
+        transform: translate(calc(var(--px, 0) * 7px), calc(var(--py, 0) * 5px))
+          rotate(calc(var(--px, 0) * 2.2deg));
+        transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+        filter: drop-shadow(0 12px 26px rgba(8, 6, 18, 0.55));
+        animation: petFloat 4.5s ease-in-out infinite;
+        pointer-events: none;
+      }
+      @keyframes petFloat {
+        0%,
+        100% {
+          margin-bottom: 0;
+        }
+        50% {
+          margin-bottom: 7px;
+        }
+      }
+
+      /* 被点击时跳一下 */
+      #pet.pet-jump .pet-body {
+        animation: petJump 0.55s cubic-bezier(0.28, 1.6, 0.5, 1);
+      }
+      @keyframes petJump {
+        0% { margin-bottom: 0; }
+        35% { margin-bottom: 20px; }
+        65% { margin-bottom: 0; }
+        82% { margin-bottom: 6px; }
+        100% { margin-bottom: 0; }
+      }
+
+      /* 台词气泡 */
+      #pet .pet-bubble {
+        position: absolute;
+        right: 6px;
+        bottom: calc(100% + 6px);
+        max-width: 190px;
+        padding: 9px 13px;
+        border-radius: 12px 12px 12px 4px;
+        background: rgba(22, 29, 43, 0.96);
+        border: 1px solid rgba(150, 160, 255, 0.24);
+        color: #e8ebf7;
+        font-size: 12.5px;
+        line-height: 1.65;
+        white-space: normal;
+        box-shadow: 0 10px 26px -14px rgba(0, 0, 0, 0.85);
+        opacity: 0;
+        transform: translateY(6px) scale(0.96);
+        transform-origin: bottom right;
+        transition: opacity 0.24s ease, transform 0.24s ease;
+        pointer-events: none;
+      }
+      #pet .pet-bubble.show {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+      /* 拖拽时关掉抖动 */
+      #pet.pet-dragging .pet-body {
+        animation: none;
+        transform: none;
+      }
+
+      /* 手机端、窄屏不显示 */
       @media (max-width: 767px) {
-        #waifu {
+        #pet {
           display: none !important;
         }
       }
     </style>
 
+    <aside id="pet" aria-hidden="true" transition:persist>
+      <div class="pet-bubble" data-pet-bubble></div>
+      <Image
+        src={petImage}
+        alt=""
+        width={340}
+        height={496}
+        format="webp"
+        quality={88}
+        class="pet-body"
+        data-pet-body
+      />
+    </aside>
+
     <script is:inline>
       (function () {
-        // 资源全部走 jsdelivr，国内可用的 fastly 节点
-        var BASE = 'https://fastly.jsdelivr.net/npm/live2d-widgets@0/';
-        var MODELS = 'https://fastly.jsdelivr.net/gh/fghrsh/live2d_api/';
-        var STASH = null;
+        var LINES = [
+          '今天也要加油哦！',
+          '记得喝口水~',
+          '嘿，又见面啦',
+          '点我干嘛呀？',
+          '这个站还挺好看的吧',
+          '要不要去看看文章？',
+          '休息一下也很好',
+          '别一直盯着屏幕啦',
+        ];
 
-        function loadCSS(href) {
-          return new Promise(function (resolve, reject) {
-            var el = document.createElement('link');
-            el.rel = 'stylesheet';
-            el.href = href;
-            el.onload = resolve;
-            el.onerror = reject;
-            document.head.appendChild(el);
-          });
-        }
+        var el = document.getElementById('pet');
+        if (!el) return;
+        if (el.dataset.petReady === '1') return;
+        el.dataset.petReady = '1';
 
-        function loadJS(src) {
-          return new Promise(function (resolve, reject) {
-            var el = document.createElement('script');
-            el.src = src;
-            el.async = false;
-            el.onload = resolve;
-            el.onerror = reject;
-            document.head.appendChild(el);
-          });
-        }
+        var bubble = el.querySelector('[data-pet-bubble]');
+        var body = el.querySelector('[data-pet-body]');
+        var hideTimer = 0;
+        var jumpTimer = 0;
 
-        function ensureCSS() {
-          if (document.querySelector('link[href*="waifu.css"]')) return Promise.resolve();
-          return loadCSS(BASE + 'waifu.css');
-        }
-
-        /* ---------- 位置与拖拽 ---------- */
-        function applyPosition(el) {
-          el.style.setProperty('left', 'auto', 'important');
-          el.style.setProperty('right', '8px', 'important');
-          el.style.setProperty('bottom', '0', 'important');
-          el.style.setProperty('z-index', '40', 'important');
-        }
-
-        function bindDrag(el) {
-          if (el.dataset.l2dDrag === '1') return;
-          el.dataset.l2dDrag = '1';
-
-          var target = el.querySelector('canvas') || el;
-          var drag = null;
-          var THRESHOLD = 5;
-
-          target.addEventListener('pointerdown', function (e) {
-            if (e.button !== 0) return;
-            if (e.target.closest && e.target.closest('#waifu-tool')) return;
-            var rect = el.getBoundingClientRect();
-            drag = {
-              x: e.clientX,
-              y: e.clientY,
-              moved: false,
-              right: Math.max(0, window.innerWidth - rect.right),
-              bottom: Math.max(0, window.innerHeight - rect.bottom),
-            };
-            el.style.transition = 'none';
-          });
-
+        /* ---- 鼠标跟随：让小人轻微转向光标 ---- */
+        if (window.matchMedia('(pointer: fine)').matches) {
           window.addEventListener(
-            'pointermove',
+            'mousemove',
             function (e) {
-              if (!drag) return;
-              var dx = e.clientX - drag.x;
-              var dy = e.clientY - drag.y;
-              if (!drag.moved && Math.abs(dx) + Math.abs(dy) < THRESHOLD) return;
-
-              if (!drag.moved) {
-                drag.moved = true;
-                el.classList.add('l2d-dragging');
-              }
-
-              var maxRight = window.innerWidth - 60;
-              var maxBottom = window.innerHeight - 60;
-              var right = Math.min(maxRight, Math.max(0, drag.right - dx));
-              var bottom = Math.min(maxBottom, Math.max(0, drag.bottom + dy));
-
-              el.style.setProperty('right', right + 'px', 'important');
-              el.style.setProperty('bottom', bottom + 'px', 'important');
-              el.style.setProperty('left', 'auto', 'important');
+              var r = el.getBoundingClientRect();
+              if (!r.width) return;
+              var cx = r.left + r.width / 2;
+              var cy = r.top + r.height / 2;
+              var dx = (e.clientX - cx) / (window.innerWidth / 2);
+              var dy = (e.clientY - cy) / (window.innerHeight / 2);
+              el.style.setProperty('--px', Math.max(-1, Math.min(1, dx)).toFixed(3));
+              el.style.setProperty('--py', Math.max(-1, Math.min(1, dy)).toFixed(3));
             },
             { passive: true }
           );
-
-          window.addEventListener('pointerup', function () {
-            if (!drag) return;
-            var moved = drag.moved;
-            drag = null;
-            el.classList.remove('l2d-dragging');
-            el.style.transition = '';
-
-            // 拖完那一下不要触发"换台词/切表情"
-            if (moved) {
-              var swallow = function (ev) {
-                ev.stopPropagation();
-                ev.preventDefault();
-              };
-              target.addEventListener('click', swallow, true);
-              setTimeout(function () {
-                target.removeEventListener('click', swallow, true);
-              }, 100);
-            }
-          });
         }
 
-        function mount(el) {
-          applyPosition(el);
-          bindDrag(el);
+        /* ---- 说话 ---- */
+        function say(text) {
+          if (!bubble) return;
+          bubble.textContent = text;
+          bubble.classList.add('show');
+          clearTimeout(hideTimer);
+          hideTimer = setTimeout(function () {
+            bubble.classList.remove('show');
+          }, 3200);
         }
 
-        /* ---------- 加载 ---------- */
-        function boot() {
-          if (window.__l2dBooted) return;
-          window.__l2dBooted = true;
-
-          Promise.all([ensureCSS(), loadJS(BASE + 'live2d.min.js')])
-            .then(function () {
-              return loadJS(BASE + 'waifu-tips.js');
-            })
-            .then(function () {
-              if (typeof window.initWidget !== 'function') return;
-              window.initWidget({
-                waifuPath: BASE + 'waifu-tips.json',
-                cdnPath: MODELS,
-                tools: ['hitokoto', 'switch-model', 'quit'],
-              });
-
-              // 挂件是异步渲染的，轮询等它出现
-              var tries = 0;
-              var timer = setInterval(function () {
-                var el = document.getElementById('waifu');
-                if (el) {
-                  clearInterval(timer);
-                  mount(el);
-                  return;
-                }
-                if (++tries > 60) clearInterval(timer);
-              }, 100);
-            })
-            .catch(function () {
-              // CDN 挂了就静默放弃，绝不影响页面本身
-            });
-        }
-
-        // 只在屏幕上加载（手机端隐藏是硬要求）
-        var wide = window.matchMedia('(min-width: 768px)').matches;
-        if (wide) {
-          if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', boot);
-          } else {
-            boot();
+        /* ---- 点击：跳一下 + 说话 ---- */
+        el.addEventListener('click', function (e) {
+          if (el.dataset.petMoved === '1') {
+            el.dataset.petMoved = '0';
+            return;
           }
-        }
+          clearTimeout(jumpTimer);
+          el.classList.remove('pet-jump');
+          void el.offsetWidth;
+          el.classList.add('pet-jump');
+          jumpTimer = setTimeout(function () {
+            el.classList.remove('pet-jump');
+          }, 600);
 
-        /* ---------- 视图过渡时保住它 ---------- */
-        // 站内跳转会替换 body，先把挂件摘下来，换完再挂回去
-        document.addEventListener('astro:before-swap', function () {
-          var el = document.getElementById('waifu');
-          if (el) {
-            STASH = el;
-            el.remove();
-          }
+          say(LINES[Math.floor(Math.random() * LINES.length)]);
         });
 
-        document.addEventListener('astro:after-swap', function () {
-          if (!STASH) return;
-          var el = STASH;
-          STASH = null;
-          ensureCSS().catch(function () {});
-          document.body.appendChild(el);
-          applyPosition(el);
+        /* ---- 拖拽 ---- */
+        var drag = null;
+        var THRESHOLD = 4;
+
+        el.addEventListener('pointerdown', function (e) {
+          if (e.button !== 0 && e.pointerType === 'mouse') return;
+          var r = el.getBoundingClientRect();
+          drag = {
+            x: e.clientX,
+            y: e.clientY,
+            moved: false,
+            right: Math.max(0, window.innerWidth - r.right),
+            bottom: Math.max(0, window.innerHeight - r.bottom),
+          };
+          try {
+            el.setPointerCapture(e.pointerId);
+          } catch (err) {}
         });
+
+        el.addEventListener('pointermove', function (e) {
+          if (!drag) return;
+          var dx = e.clientX - drag.x;
+          var dy = e.clientY - drag.y;
+          if (!drag.moved && Math.abs(dx) + Math.abs(dy) < THRESHOLD) return;
+
+          if (!drag.moved) {
+            drag.moved = true;
+            el.classList.add('pet-dragging');
+            el.style.animation = 'none';
+            el.style.opacity = '1';
+          }
+
+          var right = Math.min(window.innerWidth - 70, Math.max(0, drag.right - dx));
+          var bottom = Math.min(window.innerHeight - 90, Math.max(0, drag.bottom + dy));
+          el.style.right = right + 'px';
+          el.style.bottom = bottom + 'px';
+        });
+
+        function endDrag() {
+          if (!drag) return;
+          var moved = drag.moved;
+          drag = null;
+          el.classList.remove('pet-dragging');
+          if (moved) {
+            // 拖完那一下不要触发点击
+            el.dataset.petMoved = '1';
+            setTimeout(function () {
+              el.dataset.petMoved = '0';
+            }, 300);
+            say('放我下来啦~');
+          }
+        }
+        el.addEventListener('pointerup', endDrag);
+        el.addEventListener('pointercancel', endDrag);
+
+        /* ---- 第一次进站打个招呼 ---- */
+        setTimeout(function () {
+          say('你好呀，我是这个站的小看板娘');
+        }, 2200);
       })();
     </script>
-    <!-- ================= /Live2D 看板娘 ================= -->
+    <!-- ================= /桌面宠物 ================= -->
 
     <style>
       .skip {
