@@ -4,7 +4,7 @@ import { ClientRouter } from 'astro:transitions';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import { Image } from 'astro:assets';
-import petImage from '../assets/hero/maid.png';
+import petImage from '../assets/hero/miku.png';
 
 interface Props {
   title: string;
@@ -214,7 +214,7 @@ const canonical = new URL(Astro.url.pathname, Astro.site ?? 'https://lxxxhxx.git
         src={petImage}
         alt=""
         width={340}
-        height={447}
+        height={474}
         format="webp"
         quality={88}
         class="pet-body"
@@ -225,14 +225,14 @@ const canonical = new URL(Astro.url.pathname, Astro.site ?? 'https://lxxxhxx.git
     <script is:inline>
       (function () {
         var LINES = [
+          '你好呀，我是初音未来~',
           '今天也要加油哦！',
-          '记得喝口水~',
-          '嘿，又见面啦',
-          '点我干嘛呀？',
+          '记得喝口水呀',
+          '要不要听我唱首歌？',
+          '米库米库~',
           '这个站还挺好看的吧',
-          '要不要去看看文章？',
-          '休息一下也很好',
           '别一直盯着屏幕啦',
+          '休息一下也很好',
         ];
 
         var el = document.getElementById('pet');
@@ -348,7 +348,7 @@ const canonical = new URL(Astro.url.pathname, Astro.site ?? 'https://lxxxhxx.git
 
         /* ---- 第一次进站打个招呼 ---- */
         setTimeout(function () {
-          say('你好呀，我是这个站的小看板娘');
+          say('你好呀，我是初音未来~');
         }, 2200);
       })();
     </script>
