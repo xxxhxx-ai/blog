@@ -23,14 +23,14 @@ export const SITE = {
  * 启用步骤见项目根目录 README.md
  */
 export const GISCUS = {
-  enabled: false,
+  enabled: true,
   repo: 'xxxhxx-ai/blog',
-  repoId: '',
+  repoId: 'R_kgDOVdQ10Q',
   category: 'Announcements',
-  categoryId: '',
+  categoryId: 'DIC_kwDOVdQ10c4DKJhL',
   /** 留言板用独立的 discussion 分类，和文章评论分开 */
-  guestbookCategory: 'Guestbook',
-  guestbookCategoryId: '',
+  guestbookCategory: 'General',
+  guestbookCategoryId: 'DIC_kwDOVdQ10c4DKJhM',
 };
 
 /** 我的其它站点 —— 首页「我的站点」入口 */
