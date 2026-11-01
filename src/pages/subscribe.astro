@@ -1,0 +1,317 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHeader from '../components/PageHeader.astro';
+import ChibiArt from '../components/ChibiArt.astro';
+import { SITE } from '../data/site';
+
+const feedUrl = `${SITE.url}/rss.xml`;
+
+const readers = [
+  { name: 'Feedly', desc: '网页版最好用，手机也有 App', tag: '通用' },
+  { name: 'Inoreader', desc: '功能最全，免费版够用', tag: '通用' },
+  { name: 'Folo', desc: '界面漂亮的新一代阅读器', tag: '新潮' },
+  { name: 'NetNewsWire', desc: 'macOS / iOS 免费开源', tag: '苹果' },
+  { name: 'Read You', desc: '安卓开源，Material 设计', tag: '安卓' },
+  { name: 'Thunderbird', desc: '桌面邮件客户端自带 RSS', tag: '桌面' },
+];
+---
+
+<BaseLayout title="订阅" description="用 RSS 订阅这个博客，有新文章时自动收到。">
+  <PageHeader
+    kicker="// SUBSCRIBE"
+    title="订阅"
+    desc="不想每次都来刷？把它塞进阅读器，有新文章就会自动送到你面前。"
+    meta={`${feedUrl.replace('https://', '')}`}
+    chibiTone={1}
+  />
+
+  <div class="shell body">
+    <!-- 地址卡 -->
+    <section class="panel corners reveal feed-card">
+      <div class="fc-left">
+        <p class="kicker mono">// YOUR FEED</p>
+        <h2>订阅地址</h2>
+        <p class="fc-desc">
+          复制下面这一串，粘到任何 RSS 阅读器的「添加订阅」里就能用。
+          没有邮件、不用注册、不收集任何信息。
+        </p>
+      </div>
+
+      <div class="fc-right">
+        <code id="feed-url" class="url mono">{feedUrl}</code>
+        <button id="copy-feed" class="btn primary" type="button">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <rect x="9" y="9" width="11" height="11" rx="2" stroke="currentColor" stroke-width="1.7" />
+            <path d="M15 5.5A1.5 1.5 0 0 0 13.5 4H5.5A1.5 1.5 0 0 0 4 5.5v8A1.5 1.5 0 0 0 5.5 15" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" />
+          </svg>
+          <span class="btn-text">复制地址</span>
+        </button>
+        <a href="/rss.xml" class="raw-link mono">查看原始 XML →</a>
+      </div>
+    </section>
+
+    <!-- 步骤 -->
+    <section class="block">
+      <h2 class="sec-t mono">// 三步就够</h2>
+      <div class="steps">
+        <div class="step panel reveal">
+          <span class="sn mono">01</span>
+          <h3>复制上面的地址</h3>
+          <p>点「复制地址」按钮，或者手动选中那串网址。</p>
+        </div>
+        <div class="step panel reveal">
+          <span class="sn mono">02</span>
+          <h3>打开一个阅读器</h3>
+          <p>手机装个 App，电脑用网页版或浏览器扩展都行。下面有推荐。</p>
+        </div>
+        <div class="step panel reveal">
+          <span class="sn mono">03</span>
+          <h3>粘贴进去</h3>
+          <p>在阅读器里找「添加订阅 / Add feed」，粘贴，完事。</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 阅读器 -->
+    <section class="block">
+      <h2 class="sec-t mono">// 阅读器推荐</h2>
+      <p class="sec-d">
+        随便挑一个就行，它们读的都是同一个地址。不想装软件也可以直接
+        在浏览器里打开 <a href={feedUrl} class="inline-link">订阅地址</a> 看原始内容。
+      </p>
+
+      <div class="readers">
+        {readers.map((r) => (
+          <div class="reader panel reveal">
+            <div class="r-top">
+              <h3>{r.name}</h3>
+              <span class="tag mono">{r.tag}</span>
+            </div>
+            <p>{r.desc}</p>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <!-- 懒得用 RSS -->
+    <section class="block">
+      <div class="alt panel corners reveal">
+        <div class="alt-txt">
+          <p class="kicker mono">// OR JUST</p>
+          <h3>不想折腾阅读器？</h3>
+          <p>
+            把首页加进浏览器书签，隔段时间来看一眼也挺好。
+            这里没有日更压力，一个月能有一两篇就不错了。
+          </p>
+          <div class="alt-acts">
+            <a href="/" class="btn">回首页</a>
+            <a href="/archive" class="btn">按时间翻</a>
+          </div>
+        </div>
+        <div class="alt-art">
+          <ChibiArt size={140} tone={2} />
+        </div>
+      </div>
+    </section>
+  </div>
+</BaseLayout>
+
+<script>
+  function setupCopy() {
+    const btn = document.getElementById('copy-feed') as HTMLButtonElement | null;
+    const code = document.getElementById('feed-url') as HTMLElement | null;
+    if (!btn || !code) return;
+    if (btn.dataset.init === '1') return;
+    btn.dataset.init = '1';
+
+    const label = btn.querySelector('.btn-text') as HTMLElement;
+
+    btn.addEventListener('click', async () => {
+      const text = code.textContent?.trim() || '';
+      let ok = false;
+      try {
+        if (navigator.clipboard?.writeText) {
+          await navigator.clipboard.writeText(text);
+          ok = true;
+        }
+      } catch {
+        ok = false;
+      }
+      if (!ok) {
+        window.prompt('手动复制这个地址：', text);
+        return;
+      }
+      if (label) {
+        const old = label.textContent;
+        label.textContent = '已复制 ✓';
+        setTimeout(() => {
+          label.textContent = old;
+        }, 1800);
+      }
+    });
+  }
+
+  setupCopy();
+  document.addEventListener('astro:page-load', setupCopy);
+</script>
+
+<style>
+  .body { padding-top: 34px; }
+
+  /* 地址卡 */
+  .feed-card {
+    display: grid;
+    grid-template-columns: 1fr 380px;
+    gap: 32px;
+    padding: 30px 32px;
+    align-items: center;
+  }
+  .kicker {
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    color: var(--accent-2);
+    margin-bottom: 10px;
+  }
+  .feed-card h2 {
+    font-size: 22px;
+    margin-bottom: 10px;
+  }
+  .fc-desc {
+    font-size: 13.6px;
+    line-height: 1.85;
+    color: var(--text-2);
+    max-width: min(40ch, 100%);
+  }
+  .fc-right {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    align-items: flex-start;
+  }
+  .url {
+    display: block;
+    width: 100%;
+    padding: 12px 14px;
+    font-size: 12.5px;
+    color: var(--accent-2);
+    background: var(--accent-soft);
+    border: 1px solid var(--line);
+    border-radius: 9px;
+    word-break: break-all;
+    line-height: 1.6;
+  }
+  .raw-link {
+    font-size: 10.5px;
+    letter-spacing: 0.06em;
+    color: var(--text-3);
+    transition: color 0.2s ease;
+  }
+  .raw-link:hover { color: var(--accent); }
+
+  /* 区块 */
+  .block { margin-top: 52px; }
+  .sec-t {
+    font-size: 11.5px;
+    letter-spacing: 0.16em;
+    color: var(--accent-2);
+    margin-bottom: 16px;
+  }
+  .sec-d {
+    font-size: 13.8px;
+    line-height: 1.9;
+    color: var(--text-2);
+    margin-bottom: 20px;
+    max-width: min(62ch, 100%);
+  }
+  .inline-link {
+    color: var(--accent-2);
+    border-bottom: 1px solid var(--line-strong);
+  }
+
+  /* 步骤 */
+  .steps {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+  }
+  .step {
+    padding: 22px 22px 20px;
+    position: relative;
+  }
+  .sn {
+    font-size: 10px;
+    letter-spacing: 0.16em;
+    color: var(--text-3);
+    opacity: 0.7;
+  }
+  .step h3 {
+    font-size: 16px;
+    margin: 10px 0 8px;
+  }
+  .step p {
+    font-size: 13.2px;
+    line-height: 1.8;
+    color: var(--text-2);
+  }
+
+  /* 阅读器 */
+  .readers {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+  }
+  .reader { padding: 18px 20px; }
+  .r-top {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 6px;
+  }
+  .reader h3 {
+    font-size: 15.5px;
+  }
+  .tag {
+    font-size: 9px;
+    letter-spacing: 0.1em;
+    color: var(--text-3);
+    border: 1px solid var(--line);
+    border-radius: 20px;
+    padding: 2px 8px;
+    white-space: nowrap;
+  }
+  .reader p {
+    font-size: 12.6px;
+    line-height: 1.7;
+    color: var(--text-3);
+  }
+
+  /* 备选 */
+  .alt {
+    display: flex;
+    align-items: center;
+    gap: 28px;
+    padding: 28px 30px;
+  }
+  .alt h3 { font-size: 20px; margin: 6px 0 10px; }
+  .alt p {
+    font-size: 13.4px;
+    line-height: 1.85;
+    color: var(--text-2);
+    max-width: min(52ch, 100%);
+    margin-bottom: 16px;
+  }
+  .alt-acts { display: flex; gap: 10px; flex-wrap: wrap; }
+  .alt-art { flex-shrink: 0; opacity: 0.9; }
+
+  @media (max-width: 900px) {
+    .feed-card { grid-template-columns: 1fr; gap: 20px; padding: 24px 22px; }
+    .steps { grid-template-columns: 1fr; }
+    .readers { grid-template-columns: repeat(2, 1fr); }
+    .alt { flex-direction: column; align-items: flex-start; gap: 16px; }
+    .alt-art { display: none; }
+  }
+  @media (max-width: 560px) {
+    .readers { grid-template-columns: 1fr; }
+  }
+</style>
