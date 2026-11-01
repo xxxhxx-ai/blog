@@ -25,12 +25,12 @@ export const SITE = {
 export const GISCUS = {
   enabled: true,
   repo: 'xxxhxx-ai/blog-comment',
-  repoId: 'R_kgDOVdQ10Q',
+  repoId: 'R_kgDOVfEoFQ',
   category: 'Announcements',
-  categoryId: 'DIC_kwDOVdQ10c4DKJhL',
+  categoryId: 'DIC_kwDOVfEoFc4DKJfT',
   /** 留言板用独立的 discussion 分类，和文章评论分开 */
   guestbookCategory: 'General',
-  guestbookCategoryId: 'DIC_kwDOVdQ10c4DKJhM',
+  guestbookCategoryId: 'DIC_kwDOVfEoFc4DKJfU',
 };
 
 /** 我的其它站点 —— 首页「我的站点」入口 */
