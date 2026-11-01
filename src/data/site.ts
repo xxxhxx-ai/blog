@@ -24,7 +24,7 @@ export const SITE = {
  */
 export const GISCUS = {
   enabled: true,
-  repo: 'xxxhxx-ai/blog',
+  repo: 'xxxhxx-ai/blog-comment',
   repoId: 'R_kgDOVdQ10Q',
   category: 'Announcements',
   categoryId: 'DIC_kwDOVdQ10c4DKJhL',
