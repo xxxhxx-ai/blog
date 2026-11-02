@@ -1,6 +1,6 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import HeroArt from '../components/HeroArt.astro';
+import heroGirl from '../assets/hero/hero-girl.webp';
 import ChibiArt from '../components/ChibiArt.astro';
 import Typewriter from '../components/Typewriter.astro';
 import PostCard from '../components/PostCard.astro';
@@ -30,51 +30,36 @@ const shortcuts = [
 
 <BaseLayout title="lxxxhxx · 学习笔记与作品" suffix={false}>
   <!-- ============ HERO ============ -->
+  <!-- ============ HERO ============ -->
   <section class="hero">
-    <div class="shell hero-inner">
-      <div class="hero-copy">
-        <div class="status mono">
-          <span class="dot"></span>
-          <span>SYSTEM ONLINE</span>
-          <span class="rule"></span>
-          <span class="dim">EST. 2026</span>
-        </div>
+    <div class="hero-bg" aria-hidden="true">
+      <span class="aura aura-1"></span>
+      <span class="aura aura-2"></span>
+      <span class="grain"></span>
+    </div>
 
-        <p class="kicker mono">// HELLO, WORLD</p>
-
-        <h1 class="welcome">
-          <Typewriter text="欢迎来到我的博客" speed={135} />
-        </h1>
-
-        <p class="intro">
-          我是 <strong>lxxxhxx</strong>。这里放着我的学习笔记、做过的东西，
-          和一些还没想明白的问题。绝大多数内容都很普通，
-          但我尽量保证它们是真的。
-        </p>
-
-        <div class="acts">
-          <a href="/posts" class="btn primary">
-            进去看看
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-              <path d="M5 12h13M12 5.5 18.5 12 12 18.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
-            </svg>
-          </a>
-          <a href="/about" class="btn">关于我</a>
-        </div>
-
-        <div class="facts mono">
-          <div class="fact"><b>{String(posts.length).padStart(2, '0')}</b><span>文章</span></div>
-          <div class="vline"></div>
-          <div class="fact"><b>{String(CATEGORIES.length).padStart(2, '0')}</b><span>分类</span></div>
-          <div class="vline"></div>
-          <div class="fact"><b>{String(tagList(posts).length).padStart(2, '0')}</b><span>标签</span></div>
-          <div class="vline"></div>
-          <div class="fact"><b>∞</b><span>待写</span></div>
-        </div>
+    <div class="hero-stage" id="hero-stage">
+      <div class="figure" data-figure>
+        <img src={heroGirl.src} alt="" class="figure-img" width="800" height="711" />
+        <span class="lid lid-l" aria-hidden="true"></span>
+        <span class="lid lid-r" aria-hidden="true"></span>
       </div>
+    </div>
 
-      <div class="hero-art">
-        <HeroArt />
+    <div class="hero-copy">
+      <h1 class="hero-title">
+        <Typewriter text="在这里，存放我的碎片与思考" speed={110} />
+      </h1>
+      <p class="hero-sub mono">A private archive of ideas and works</p>
+
+      <div class="acts">
+        <a href="/posts" class="btn primary">
+          进去看看
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M5 12h13M12 5.5 18.5 12 12 18.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+          </svg>
+        </a>
+        <a href="/about" class="btn">关于我</a>
       </div>
     </div>
   </section>
@@ -234,127 +219,178 @@ const shortcuts = [
 <style>
   /* ---------- HERO ---------- */
   .hero {
-    padding: 72px 0 40px;
     position: relative;
+    padding: 46px 0 46px;
     overflow: hidden;
+    text-align: center;
   }
-  .hero-inner {
-    display: grid;
-    grid-template-columns: 1.08fr 0.92fr;
-    gap: 40px;
-    align-items: center;
-  }
-  .hero-copy { min-width: 0; }
 
-  .status {
-    display: inline-flex;
-    align-items: center;
-    gap: 10px;
-    font-size: 10.5px;
-    letter-spacing: 0.14em;
-    color: var(--text-3);
-    margin-bottom: 30px;
+  /* 紫色渐变底 */
+  .hero-bg {
+    position: absolute;
+    inset: -12% -22%;
+    z-index: 0;
+    pointer-events: none;
   }
-  .dot {
-    width: 5px;
-    height: 5px;
+  .hero-bg::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 54% 48% at 50% 34%, rgba(160, 124, 255, 0.58), transparent 64%),
+      radial-gradient(ellipse 38% 34% at 18% 16%, rgba(110, 231, 249, 0.1), transparent 70%),
+      radial-gradient(ellipse 44% 40% at 84% 74%, rgba(255, 154, 213, 0.2), transparent 70%),
+      linear-gradient(180deg, rgba(120, 90, 200, 0.16) 0%, transparent 42%, rgba(90, 60, 160, 0.12) 100%);
+  }
+
+  /* 粉色颗粒光圈 */
+  .aura {
+    position: absolute;
+    left: 50%;
+    top: 44%;
+    width: min(640px, 94vw);
+    aspect-ratio: 1;
+    transform: translate(-50%, -50%);
     border-radius: 50%;
-    background: var(--accent-2);
-    box-shadow: 0 0 10px var(--accent-2);
-    animation: pulseRing 2.4s ease-out infinite;
+    background: radial-gradient(
+      circle,
+      rgba(255, 150, 205, 0.34) 0%,
+      rgba(255, 118, 184, 0.13) 30%,
+      rgba(255, 122, 186, 0.05) 54%,
+      transparent 70%
+    );
+    filter: blur(24px);
+    animation: auraBreathe 7s ease-in-out infinite;
   }
-  .rule {
-    width: 34px;
-    height: 1px;
-    background: var(--line-strong);
+  .aura-2 {
+    width: min(900px, 128vw);
+    opacity: 0.32;
+    animation-duration: 9.5s;
+    animation-delay: -3s;
   }
-  .dim { opacity: 0.7; }
+  @keyframes auraBreathe {
+    0%,
+    100% {
+      transform: translate(-50%, -50%) scale(1);
+      opacity: 0.85;
+    }
+    50% {
+      transform: translate(-50%, -50%) scale(1.07);
+      opacity: 1;
+    }
+  }
 
-  .kicker {
-    font-size: 11px;
-    letter-spacing: 0.22em;
-    color: var(--accent-2);
-    margin-bottom: 14px;
-    text-transform: uppercase;
+  /* 颗粒噪点 */
+  .grain {
+    position: absolute;
+    inset: 0;
+    opacity: 0.4;
+    mix-blend-mode: overlay;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)'/%3E%3C/svg%3E");
+    background-size: 120px 120px;
   }
 
-  .welcome {
-    font-size: clamp(30px, 4.6vw, 49px);
-    line-height: 1.28;
-    letter-spacing: 0.06em;
-    margin-bottom: 24px;
-    color: var(--text);
-    min-height: 1.32em;
+  /* 人物 */
+  .hero-stage {
+    position: relative;
+    z-index: 1;
+    width: min(560px, 86vw);
+    margin: 0 auto;
   }
-  .welcome :global(.txt) {
-    background: linear-gradient(102deg, var(--grad-a) 4%, var(--grad-b) 36%, var(--grad-c) 68%, var(--grad-a) 96%);
+  .figure {
+    position: relative;
+    transform: translate(calc(var(--mx, 0) * 9px), calc(var(--my, 0) * 7px));
+    transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+    will-change: transform;
+  }
+  .figure-img {
+    display: block;
+    width: 100%;
+    height: auto;
+    -webkit-mask-image: radial-gradient(closest-side, #000 78%, rgba(0, 0, 0, 0.45) 92%, transparent 100%);
+    mask-image: radial-gradient(closest-side, #000 78%, rgba(0, 0, 0, 0.45) 92%, transparent 100%);
+    filter: drop-shadow(0 12px 30px rgba(255, 130, 190, 0.12));
+  }
+
+  /* 眨眼：两片眼皮，JS 周期性触发 */
+  .lid {
+    position: absolute;
+    top: 24.1%;
+    width: 8.4%;
+    height: 7%;
+    background: #fbe0e5;
+    border-radius: 50%;
+    transform: scaleY(0);
+    transform-origin: top center;
+    opacity: 0;
+    filter: blur(1.5px);
+    transition: transform 0.09s ease, opacity 0.09s ease;
+    pointer-events: none;
+  }
+  .lid-l {
+    left: 21.7%;
+  }
+  .lid-r {
+    left: 35.5%;
+  }
+  .figure.blink .lid {
+    transform: scaleY(1);
+    opacity: 1;
+  }
+
+  /* 文字 */
+  .hero-copy {
+    position: relative;
+    z-index: 1;
+    margin-top: 10px;
+    padding: 0 20px;
+  }
+  .hero-title {
+    font-size: clamp(21px, 3.2vw, 34px);
+    line-height: 1.4;
+    letter-spacing: 0.02em;
+    min-height: 1.4em;
+  }
+  .hero-title :global(.txt) {
+    background: linear-gradient(102deg, #e8ebf7 6%, #b794ff 44%, #6ee7f9 72%, #e8ebf7 96%);
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;
-    filter: drop-shadow(0 0 24px rgba(150, 120, 255, 0.28));
   }
-  .welcome :global(.caret) {
-    background: var(--accent-2);
-    box-shadow: 0 0 14px var(--accent-2);
+  .hero-title :global(.caret) {
+    color: var(--accent-2);
+    margin-left: 2px;
   }
-
-  .intro {
-    font-size: 15.4px;
-    line-height: 1.95;
-    color: var(--text-2);
-    max-width: min(46ch, 100%);
-    margin-bottom: 30px;
-  }
-  .intro strong {
-    color: var(--text);
+  .hero-sub {
+    margin-top: 15px;
     font-family: var(--font-mono);
-    font-weight: 500;
-    letter-spacing: 0.02em;
+    font-size: 12px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--text-2);
   }
-
   .acts {
     display: flex;
-    gap: 10px;
-    flex-wrap: wrap;
-    margin-bottom: 34px;
+    gap: 12px;
+    justify-content: center;
+    margin-top: 28px;
   }
 
-  .facts {
-    display: flex;
-    align-items: center;
-    gap: 18px;
-    padding-top: 20px;
-    border-top: 1px solid var(--line-soft);
+  @media (max-width: 640px) {
+    .hero {
+      padding: 30px 0 34px;
+    }
+    .hero-stage {
+      width: min(330px, 80vw);
+    }
+    .hero-sub {
+      font-size: 9.5px;
+      letter-spacing: 0.14em;
+    }
+    .acts {
+      margin-top: 22px;
+    }
   }
-  .fact {
-    display: flex;
-    flex-direction: column;
-    gap: 1px;
-  }
-  .fact b {
-    font-size: 19px;
-    font-weight: 500;
-    color: var(--text);
-    line-height: 1.2;
-    letter-spacing: -0.02em;
-  }
-  .fact span {
-    font-size: 10px;
-    letter-spacing: 0.1em;
-    color: var(--text-3);
-  }
-  .vline {
-    width: 1px;
-    height: 26px;
-    background: var(--line);
-  }
-
-  .hero-art {
-    position: relative;
-    width: min(var(--art-w, 336px), 100%);
-    margin-inline: auto;
-  }
-
   /* ---------- 区块 ---------- */
   .block { padding-top: 76px; }
 
@@ -608,3 +644,45 @@ const shortcuts = [
     :global(.cat-girl) { right: 12px; bottom: 12px; }
   }
 </style>
+
+<script>
+  // 鼠标视差 + 眨眼
+  (function () {
+    let bound = false;
+
+    function bindMouse() {
+      if (bound) return;
+      bound = true;
+      document.addEventListener(
+        'mousemove',
+        (e) => {
+          const fig = document.querySelector('[data-figure]') as HTMLElement | null;
+          if (!fig) return;
+          const cx = window.innerWidth / 2;
+          const cy = window.innerHeight / 2;
+          fig.style.setProperty('--mx', ((e.clientX - cx) / cx).toFixed(3));
+          fig.style.setProperty('--my', ((e.clientY - cy) / cy).toFixed(3));
+        },
+        { passive: true }
+      );
+    }
+
+    function blinkLoop() {
+      const fig = document.querySelector('[data-figure]') as HTMLElement | null;
+      if (!fig) return;
+      fig.classList.add('blink');
+      setTimeout(() => fig.classList.remove('blink'), 125);
+      setTimeout(blinkLoop, 2800 + Math.random() * 3400);
+    }
+
+    function init() {
+      bindMouse();
+      if (document.querySelector('[data-figure]')) {
+        setTimeout(blinkLoop, 1600);
+      }
+    }
+
+    init();
+    document.addEventListener('astro:page-load', init);
+  })();
+</script>
