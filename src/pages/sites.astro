@@ -48,14 +48,6 @@ import { MY_SITES } from '../data/site';
         </p>
       </div>
     </div>
-
-    <div class="edit-tip panel reveal">
-      <p class="mono k">// 怎么改这里</p>
-      <p>
-        这些内容在网页后台（app.pagescms.org → 「我的站点」）里就能改，
-        也可以直接编辑 <code>src/data/sites.json</code>。改完提交，等一分钟自动发布。
-      </p>
-    </div>
   </div>
 </BaseLayout>
 
@@ -155,28 +147,6 @@ import { MY_SITES } from '../data/site';
     letter-spacing: 0.1em;
     color: var(--text-3) !important;
     font-family: var(--font-mono) !important;
-  }
-
-  .edit-tip { margin-top: 14px; padding: 20px 24px; }
-  .edit-tip .k {
-    font-size: 10px;
-    letter-spacing: 0.16em;
-    color: var(--accent-2);
-    margin-bottom: 8px;
-  }
-  .edit-tip p {
-    font-size: 13px;
-    color: var(--text-2);
-    line-height: 1.8;
-  }
-  .edit-tip code {
-    font-family: var(--font-mono);
-    font-size: 11.6px;
-    padding: 1px 6px;
-    border-radius: 5px;
-    background: var(--accent-soft);
-    border: 1px solid var(--line);
-    color: var(--accent-2);
   }
 
   @media (max-width: 900px) {
