@@ -249,55 +249,85 @@ import Typewriter from './Typewriter.astro';
 
 <script is:inline>
   (function () {
-    var el = document.querySelector('[data-splash]');
-    if (!el) return;
+    // 站内跳转（视图过渡）时不再弹开场；刷新或新开标签页才显示
+    var navigating = false;
+    document.addEventListener('astro:before-swap', function () {
+      navigating = true;
+    });
 
-    // 不再记「已看过」——刷新页面也能重新看到开场
+    var mouseBound = false;
 
-    document.documentElement.style.overflow = 'hidden';
-
-    var figure = el.querySelector('[data-splash-figure]');
-
-    /* 鼠标视差 */
-    document.addEventListener(
-      'mousemove',
-      function (e) {
-        if (!figure) return;
-        var cx = window.innerWidth / 2;
-        var cy = window.innerHeight / 2;
-        figure.style.setProperty('--mx', ((e.clientX - cx) / cx).toFixed(3));
-        figure.style.setProperty('--my', ((e.clientY - cy) / cy).toFixed(3));
-      },
-      { passive: true }
-    );
-
-    /* 眨眼 */
-    function blinkLoop() {
-      if (!figure) return;
-      figure.classList.add('blink');
-      setTimeout(function () {
-        figure.classList.remove('blink');
-      }, 125);
-      setTimeout(blinkLoop, 2800 + Math.random() * 3400);
+    function bindMouse() {
+      if (mouseBound) return;
+      mouseBound = true;
+      document.addEventListener(
+        'mousemove',
+        function (e) {
+          var fig = document.querySelector('[data-splash-figure]');
+          if (!fig) return;
+          var cx = window.innerWidth / 2;
+          var cy = window.innerHeight / 2;
+          fig.style.setProperty('--mx', ((e.clientX - cx) / cx).toFixed(3));
+          fig.style.setProperty('--my', ((e.clientY - cy) / cy).toFixed(3));
+        },
+        { passive: true }
+      );
     }
-    setTimeout(blinkLoop, 1500);
 
-    /* 进入 */
-    function enter() {
-      el.classList.add('splash-gone');
-      document.documentElement.style.overflow = '';
-      setTimeout(function () {
+    function init() {
+      var el = document.querySelector('[data-splash]');
+      if (!el) return;
+      if (el.dataset.ready === '1') return;
+      el.dataset.ready = '1';
+
+      // 站内跳转过来的：直接撤掉，不显示
+      if (navigating) {
         el.remove();
-      }, 650);
+        return;
+      }
+
+      document.documentElement.style.overflow = 'hidden';
+
+      var figure = el.querySelector('[data-splash-figure]');
+      bindMouse();
+
+      /* 眨眼 */
+      function blinkLoop() {
+        if (!figure || !document.body.contains(figure)) return;
+        figure.classList.add('blink');
+        setTimeout(function () {
+          figure.classList.remove('blink');
+        }, 125);
+        setTimeout(blinkLoop, 2800 + Math.random() * 3400);
+      }
+      setTimeout(blinkLoop, 1500);
+
+      /* 进入 */
+      function enter() {
+        if (el.classList.contains('splash-gone')) return;
+        el.classList.add('splash-gone');
+        document.documentElement.style.overflow = '';
+        navigating = true; // 之后就当作站内浏览
+        setTimeout(function () {
+          el.remove();
+        }, 650);
+      }
+
+      var btn = el.querySelector('[data-splash-enter]');
+      if (btn) btn.addEventListener('click', enter);
+      el.addEventListener('click', function (e) {
+        if (e.target === el || (e.target.classList && e.target.classList.contains('splash-bg'))) enter();
+      });
+      document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape' || e.key === 'Enter') enter();
+      });
     }
 
-    var btn = el.querySelector('[data-splash-enter]');
-    if (btn) btn.addEventListener('click', enter);
-    el.addEventListener('click', function (e) {
-      if (e.target === el || e.target.classList.contains('splash-bg')) enter();
-    });
-    document.addEventListener('keydown', function (e) {
-      if (e.key === 'Escape' || e.key === 'Enter') enter();
-    });
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', init);
+    } else {
+      init();
+    }
+    document.addEventListener('astro:page-load', init);
   })();
 </script>
