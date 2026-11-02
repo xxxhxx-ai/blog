@@ -1,0 +1,313 @@
+---
+/**
+ * 开场页 —— 进站先看到这一屏，点「进去看看」才进入正式首页。
+ * 只负责开场，不参与首页布局，关掉它首页完全不受影响。
+ */
+import heroGirl from '../assets/hero/hero-girl.webp';
+import Typewriter from './Typewriter.astro';
+---
+
+<div id="splash" class="splash" data-splash>
+  <div class="splash-bg" aria-hidden="true">
+    <span class="aura aura-1"></span>
+    <span class="aura aura-2"></span>
+    <span class="grain"></span>
+  </div>
+
+  <div class="splash-stage">
+    <div class="figure" data-splash-figure>
+      <img src={heroGirl.src} alt="" class="figure-img" width="800" height="711" />
+      <span class="lid lid-l" aria-hidden="true"></span>
+      <span class="lid lid-r" aria-hidden="true"></span>
+    </div>
+  </div>
+
+  <div class="splash-copy">
+    <h1 class="splash-title">
+      <Typewriter text="在这里，存放我的碎片与思考" speed={115} />
+    </h1>
+    <p class="splash-sub mono">A private archive of ideas and works</p>
+    <button class="splash-enter" type="button" data-splash-enter>
+      <span>进去看看</span>
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <path d="M5 12h13M12 5.5 18.5 12 12 18.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+      </svg>
+    </button>
+  </div>
+</div>
+
+<style is:inline>
+  #splash {
+    position: fixed;
+    inset: 0;
+    z-index: 9998;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 3vh 20px;
+    background: radial-gradient(ellipse 72% 62% at 50% 30%, #1d1236 0%, #150e28 42%, #0c0818 72%, #08060f 100%);
+    overflow: hidden;
+    transition: opacity 0.6s ease, visibility 0.6s ease;
+  }
+  #splash.splash-gone {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+  }
+  /* 已经看过就不再闪一下 */
+  #splash.splash-skip {
+    display: none !important;
+  }
+
+  .splash-bg {
+    position: absolute;
+    inset: -12% -22%;
+    z-index: 0;
+    pointer-events: none;
+  }
+  .splash-bg::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 50% 44% at 50% 34%, rgba(160, 124, 255, 0.44), transparent 66%),
+      radial-gradient(ellipse 38% 34% at 16% 14%, rgba(110, 231, 249, 0.09), transparent 70%),
+      radial-gradient(ellipse 42% 38% at 86% 78%, rgba(255, 154, 213, 0.16), transparent 70%);
+  }
+
+  /* 粉色颗粒光圈 */
+  .aura {
+    position: absolute;
+    left: 50%;
+    top: 42%;
+    width: min(660px, 96vw);
+    aspect-ratio: 1;
+    transform: translate(-50%, -50%);
+    border-radius: 50%;
+    background: radial-gradient(
+      circle,
+      rgba(255, 150, 205, 0.32) 0%,
+      rgba(255, 118, 184, 0.12) 32%,
+      rgba(255, 118, 184, 0.04) 54%,
+      transparent 70%
+    );
+    filter: blur(26px);
+    animation: splashBreathe 7s ease-in-out infinite;
+  }
+  .aura-2 {
+    width: min(920px, 130vw);
+    opacity: 0.3;
+    animation-duration: 9.5s;
+    animation-delay: -3s;
+  }
+  @keyframes splashBreathe {
+    0%,
+    100% {
+      transform: translate(-50%, -50%) scale(1);
+      opacity: 0.85;
+    }
+    50% {
+      transform: translate(-50%, -50%) scale(1.07);
+      opacity: 1;
+    }
+  }
+
+  .grain {
+    position: absolute;
+    inset: 0;
+    opacity: 0.34;
+    mix-blend-mode: overlay;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)'/%3E%3C/svg%3E");
+    background-size: 120px 120px;
+  }
+
+  /* 人物 */
+  .splash-stage {
+    position: relative;
+    z-index: 1;
+    width: min(460px, 78vw);
+    flex: 0 1 auto;
+  }
+  .figure {
+    position: relative;
+    transform: translate(calc(var(--mx, 0) * 9px), calc(var(--my, 0) * 7px));
+    transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+    will-change: transform;
+  }
+  .figure-img {
+    display: block;
+    width: 100%;
+    height: auto;
+    -webkit-mask-image: radial-gradient(closest-side, #000 84%, rgba(0, 0, 0, 0.4) 94%, transparent 100%);
+    mask-image: radial-gradient(closest-side, #000 84%, rgba(0, 0, 0, 0.4) 94%, transparent 100%);
+    filter: drop-shadow(0 12px 30px rgba(255, 130, 190, 0.12));
+  }
+
+  /* 眨眼 */
+  .lid {
+    position: absolute;
+    top: 24.1%;
+    width: 8.4%;
+    height: 7%;
+    background: #fbe0e5;
+    border-radius: 50%;
+    transform: scaleY(0);
+    transform-origin: top center;
+    opacity: 0;
+    filter: blur(1.5px);
+    transition: transform 0.09s ease, opacity 0.09s ease;
+    pointer-events: none;
+  }
+  .lid-l {
+    left: 21.7%;
+  }
+  .lid-r {
+    left: 35.5%;
+  }
+  .figure.blink .lid {
+    transform: scaleY(1);
+    opacity: 1;
+  }
+
+  /* 文字 */
+  .splash-copy {
+    position: relative;
+    z-index: 1;
+    margin-top: 22px;
+    text-align: center;
+  }
+  .splash-title {
+    font-size: clamp(20px, 3vw, 30px);
+    line-height: 1.45;
+    letter-spacing: 0.02em;
+    min-height: 1.45em;
+  }
+  .splash-title :global(.txt) {
+    background: linear-gradient(102deg, #e8ebf7 6%, #b794ff 44%, #6ee7f9 72%, #e8ebf7 96%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .splash-title :global(.caret) {
+    color: #6ee7f9;
+    margin-left: 2px;
+  }
+  .splash-sub {
+    margin-top: 13px;
+    font-size: 11.5px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: #a8b0c7;
+  }
+  .splash-enter {
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    margin-top: 26px;
+    padding: 11px 24px;
+    border: 1px solid rgba(183, 148, 255, 0.5);
+    border-radius: 999px;
+    background: rgba(183, 148, 255, 0.12);
+    color: #e8ebf7;
+    font-family: var(--font-mono, monospace);
+    font-size: 13px;
+    letter-spacing: 0.1em;
+    cursor: pointer;
+    transition: background 0.22s ease, border-color 0.22s ease, box-shadow 0.22s ease, color 0.22s ease;
+  }
+  .splash-enter:hover {
+    background: rgba(183, 148, 255, 0.26);
+    border-color: #b794ff;
+    color: #fff;
+    box-shadow: 0 0 22px rgba(183, 148, 255, 0.35);
+  }
+  .splash-enter svg {
+    transition: transform 0.22s ease;
+  }
+  .splash-enter:hover svg {
+    transform: translateX(3px);
+  }
+
+  @media (max-width: 640px) {
+    .splash-stage {
+      width: min(300px, 76vw);
+    }
+    .splash-title {
+      font-size: 18px;
+    }
+    .splash-sub {
+      font-size: 9.5px;
+      letter-spacing: 0.12em;
+    }
+    .splash-enter {
+      margin-top: 20px;
+      padding: 10px 20px;
+    }
+  }
+</style>
+
+<script is:inline>
+  (function () {
+    var KEY = 'lxxxhxx-entered';
+    var el = document.querySelector('[data-splash]');
+    if (!el) return;
+
+    // 本次会话已经进过站，就别再拦一次
+    try {
+      if (sessionStorage.getItem(KEY) === '1') {
+        el.classList.add('splash-skip');
+        return;
+      }
+    } catch (e) {}
+
+    document.documentElement.style.overflow = 'hidden';
+
+    var figure = el.querySelector('[data-splash-figure]');
+
+    /* 鼠标视差 */
+    document.addEventListener(
+      'mousemove',
+      function (e) {
+        if (!figure) return;
+        var cx = window.innerWidth / 2;
+        var cy = window.innerHeight / 2;
+        figure.style.setProperty('--mx', ((e.clientX - cx) / cx).toFixed(3));
+        figure.style.setProperty('--my', ((e.clientY - cy) / cy).toFixed(3));
+      },
+      { passive: true }
+    );
+
+    /* 眨眼 */
+    function blinkLoop() {
+      if (!figure) return;
+      figure.classList.add('blink');
+      setTimeout(function () {
+        figure.classList.remove('blink');
+      }, 125);
+      setTimeout(blinkLoop, 2800 + Math.random() * 3400);
+    }
+    setTimeout(blinkLoop, 1500);
+
+    /* 进入 */
+    function enter() {
+      el.classList.add('splash-gone');
+      document.documentElement.style.overflow = '';
+      try {
+        sessionStorage.setItem(KEY, '1');
+      } catch (e) {}
+      setTimeout(function () {
+        el.remove();
+      }, 650);
+    }
+
+    var btn = el.querySelector('[data-splash-enter]');
+    if (btn) btn.addEventListener('click', enter);
+    el.addEventListener('click', function (e) {
+      if (e.target === el || e.target.classList.contains('splash-bg')) enter();
+    });
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' || e.key === 'Enter') enter();
+    });
+  })();
+</script>
