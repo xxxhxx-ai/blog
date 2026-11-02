@@ -249,17 +249,10 @@ import Typewriter from './Typewriter.astro';
 
 <script is:inline>
   (function () {
-    var KEY = 'lxxxhxx-entered';
     var el = document.querySelector('[data-splash]');
     if (!el) return;
 
-    // 本次会话已经进过站，就别再拦一次
-    try {
-      if (sessionStorage.getItem(KEY) === '1') {
-        el.classList.add('splash-skip');
-        return;
-      }
-    } catch (e) {}
+    // 不再记「已看过」——刷新页面也能重新看到开场
 
     document.documentElement.style.overflow = 'hidden';
 
@@ -293,9 +286,6 @@ import Typewriter from './Typewriter.astro';
     function enter() {
       el.classList.add('splash-gone');
       document.documentElement.style.overflow = '';
-      try {
-        sessionStorage.setItem(KEY, '1');
-      } catch (e) {}
       setTimeout(function () {
         el.remove();
       }, 650);
