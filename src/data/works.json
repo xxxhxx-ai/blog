@@ -15,13 +15,17 @@
       "tone": 2
     },
     {
-      "title": "待补充的作品",
-      "year": "—",
-      "role": "—",
-      "desc": "暂时没有",
-      "href": "#",
+      "title": "个人看板",
+      "year": "2026",
+      "role": "制作者",
+      "stack": [
+        "deep seek"
+      ],
+      "desc": "可以用来放自己收集的素材，有分类随时调用",
+      "href": "material-gallery-79805.app.workbuddy.host/?sharecode=7U7B3BZUTA",
       "status": "占位",
       "tone": 3
-    }
+    },
+    {}
   ]
 }
