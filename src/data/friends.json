@@ -1,28 +1,10 @@
 {
   "items": [
     {
-      "name": "Astro",
-      "url": "https://astro.build",
+      "name": "jia期如梦",
+      "url": "https://1peekaboo.github.io/ ",
       "desc": "默默无闻",
-      "avatar": "A"
-    },
-    {
-      "name": "MDN",
-      "url": "https://developer.mozilla.org",
-      "desc": "前端查文档最快的地方",
-      "avatar": "M"
-    },
-    {
-      "name": "GitHub",
-      "url": "https://github.com",
-      "desc": "代码最多的地方",
-      "avatar": "G"
-    },
-    {
-      "name": "我的工具",
-      "url": "#",
-      "desc": "需要的工具",
-      "avatar": "代"
+      "avatar": "j"
     }
   ]
 }
