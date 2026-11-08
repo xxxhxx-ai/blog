@@ -26,6 +26,14 @@
       "status": "占位",
       "tone": 3
     },
-    {}
+    {
+      "title": "个人介绍",
+      "year": "2026",
+      "role": "设计 + 开发",
+      "desc": "比较美观比传统的ppt耀眼新奇",
+      "href": "https://unrivaled-duckanoo-608ac7.netlify.app",
+      "status": "已上线",
+      "tone": 1
+    }
   ]
 }
