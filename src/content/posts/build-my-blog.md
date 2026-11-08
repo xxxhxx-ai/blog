@@ -2,7 +2,7 @@
 title: 从零搭一个属于自己的博客
 description: 记录我第一次把"想法"变成一个真实网址的全过程
 pubDate: 2026-10-28
-category: 学习笔记
+category: 项目作品
 tags:
   - 建站
   - Astro
